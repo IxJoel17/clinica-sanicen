@@ -1,0 +1,61 @@
+package com.utp.clinicasanicen_be.dto.response;
+
+public class MedicoResponseDTO {
+    
+    private Integer idMedico;
+    private String nombre;
+    private String apellido;
+    private String dni;
+    private String telefono;
+    private String correo;
+    private String direccion;
+    private EspecialidadSimpleDTO especialidad;
+    private Boolean activo;
+    
+    public MedicoResponseDTO() {}
+    
+    public Integer getIdMedico() { return idMedico; }
+    public void setIdMedico(Integer idMedico) { this.idMedico = idMedico; }
+    
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    
+    public String getDni() { return dni; }
+    public void setDni(String dni) { this.dni = dni; }
+    
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+    
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
+    
+    public String getDireccion() { return direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
+    
+    public EspecialidadSimpleDTO getEspecialidad() { return especialidad; }
+    public void setEspecialidad(EspecialidadSimpleDTO especialidad) { this.especialidad = especialidad; }
+    
+    public Boolean getActivo() { return activo; }
+    public void setActivo(Boolean activo) { this.activo = activo; }
+    
+    public static class EspecialidadSimpleDTO {
+        private Integer idEspecialidad;
+        private String nombre;
+        private String descripcion;
+        
+        public EspecialidadSimpleDTO() {}
+        
+        public Integer getIdEspecialidad() { return idEspecialidad; }
+        public void setIdEspecialidad(Integer idEspecialidad) { this.idEspecialidad = idEspecialidad; }
+        
+        public String getNombre() { return nombre; }
+        public void setNombre(String nombre) { this.nombre = nombre; }
+        
+        public String getDescripcion() { return descripcion; }
+        public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    }
+}
+
