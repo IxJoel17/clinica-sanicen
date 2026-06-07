@@ -7,7 +7,7 @@ import '../../../styles/common.css'
 import './Citas.css'
 
 function Citas() {
-  const navigate = useNavigate()
+   const navigate = useNavigate()
   const { user } = useAuth()
   const [formData, setFormData] = useState({
     idPaciente: null,
@@ -26,6 +26,15 @@ function Citas() {
   const [showReagendarModal, setShowReagendarModal] = useState(false)
   const [citaAReagendar, setCitaAReagendar] = useState(null)
   const [reagendarData, setReagendarData] = useState({ fecha: '', hora: '' })
+  const [modalPagoAbierto, setModalPagoAbierto] = useState(false)
+  const [citaSeleccionadaPago, setCitaSeleccionadaPago] = useState(null)
+  const [pagoExitoso, setPagoExitoso] = useState(false)
+  const [citaGuardada, setCitaGuardada] = useState(null)
+
+const [datosPago, setDatosPago] = useState({
+  monto: 20,
+  formaPago: '',
+})
 
   // Cargar especialidades y médicos al montar
   useEffect(() => {
@@ -163,13 +172,23 @@ function Citas() {
       }
 
       // Crear la cita con el idPaciente correcto
-      await citasAPI.create({
+      const response = await citasAPI.create({
         idPaciente: idPacienteParaCita,
         idMedico: parseInt(formData.idMedico),
         fecha: formData.fecha,
         hora: formData.hora + ':00', // Asegurar formato HH:mm:ss
         motivo: formData.motivo,
       })
+      const nuevaCita = response?.data || response
+
+        setCitaGuardada(nuevaCita)
+
+        setDatosPago({
+          monto: 20,
+          formaPago: '',
+        })
+
+        setModalPagoAbierto(true)
 
       // Limpiar formulario
       setFormData({
@@ -183,7 +202,7 @@ function Citas() {
 
       // Recargar citas
       await cargarCitas()
-      navigate('/confirmar-cita')
+      //navigate('/confirmar-cita')
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Error al crear la cita. Intenta nuevamente.')
       console.error('Error al crear cita:', err)
@@ -255,6 +274,54 @@ function Citas() {
     } catch (err) {
       setError(err.response?.data?.error || 'Error al reagendar la cita')
     }
+  }
+
+    const cerrarModalPago = () => {
+      setModalPagoAbierto(false)
+      setPagoExitoso(false)
+      setCitaGuardada(null)
+      setDatosPago({
+        monto: 20,
+        formaPago: '',
+      })
+    }
+
+    const handleChangePago = (e) => {
+      const { name, value } = e.target
+
+      setDatosPago({
+        ...datosPago,
+        [name]: value,
+      })
+    }
+
+    const confirmarPago = (e) => {
+  e.preventDefault()
+
+  if (!datosPago.formaPago) {
+    alert('Seleccione la forma de pago.')
+    return
+  }
+
+    const boleta = {
+      numeroBoleta: `B-${Date.now()}`,
+      cita: citaGuardada,
+      monto: datosPago.monto,
+      formaPago: datosPago.formaPago,
+      fechaEmision: new Date().toLocaleDateString('es-PE'),
+      estado: 'PAGADO',
+    }
+
+    console.log('Boleta generada:', boleta)
+
+    setPagoExitoso(true)
+
+    setTimeout(() => {
+      setModalPagoAbierto(false)
+      setPagoExitoso(false)
+      setCitaGuardada(null)
+      //navigate('/confirmar-cita')
+    }, 2000)
   }
 
   const puedeCancelarOReagendar = (cita) => {
@@ -404,9 +471,14 @@ function Citas() {
                 </div>
 
                 <div className="reserva-buttons" style={{ marginTop: '30px' }}>
-                  <button type="submit" className="btn-realizar" disabled={loading}>
-                    {loading ? 'PROCESANDO...' : 'realizar pago'}
-                  </button>
+                <button
+                  type="submit"
+                  className="btn-realizar"
+                  disabled={loading}
+                >
+                  {loading ? 'PROCESANDO...' : 'Registrar cita'}
+                </button>
+
                   <button
                     type="reset"
                     className="btn-borrar"
@@ -517,7 +589,71 @@ function Citas() {
           </div>
         </div>
       </div>
+        {/* Modal para Pago */}
+      {modalPagoAbierto && (
+        <div className="modal-pago-overlay">
+          <div className="modal-pago-box">
+            {!pagoExitoso ? (
+              <>
+                <div className="modal-pago-header">
+                  <h2>Pago de cita médica</h2>
+                  <button className="modal-pago-close" onClick={cerrarModalPago}>
+                    ×
+                  </button>
+                </div>
 
+                <div className="modal-pago-body">
+                  <form onSubmit={confirmarPago}>
+                    <div className="input-group">
+                      <label>Monto a pagar</label>
+                      <input
+                        type="number"
+                        name="monto"
+                        value={datosPago.monto}
+                        readOnly
+                      />
+                    </div>
+
+                    <div className="input-group">
+                      <label>Forma de pago</label>
+                      <select
+                        name="formaPago"
+                        value={datosPago.formaPago}
+                        onChange={handleChangePago}
+                        required
+                      >
+                        <option value="">Seleccione forma de pago</option>
+                        <option value="EFECTIVO">Efectivo</option>
+                        <option value="YAPE">Yape</option>
+                        <option value="PLIN">Plin</option>
+                        <option value="TARJETA">Tarjeta</option>
+                        <option value="TRANSFERENCIA">Transferencia</option>
+                      </select>
+                    </div>
+
+                    <div className="modal-pago-actions">
+                      <button type="button" className="btn-modal-cancelar" onClick={cerrarModalPago}>
+                        Cancelar
+                      </button>
+
+                      <button type="submit" className="btn-modal-pagar">
+                        Generar boleta
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            ) : (
+              <div className="pago-exitoso">
+                <div className="check-icon">✅</div>
+                <h2>Cita registrada exitosamente</h2>
+                <p>El pago fue realizado correctamente.</p>
+                <p>Redirigiendo a tus citas...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Modal para Reagendar */}
       {showReagendarModal && citaAReagendar && (
         <div
