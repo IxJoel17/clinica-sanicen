@@ -1,0 +1,40 @@
+/* Estilos específicos del Portal */
+.card-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.card-option:hover {
+  transform: translateX(5px);
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  background-color: #4fc3f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: white;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.card-text {
+  flex-grow: 1;
+  background-color: #e0e0e0;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  font-size: 1.3rem;
+  color: #000;
+  font-weight: 500;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+

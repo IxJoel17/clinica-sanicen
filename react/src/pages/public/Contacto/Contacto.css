@@ -1,0 +1,67 @@
+.contacto-section {
+  padding: 50px 5%;
+  text-align: center;
+  max-width: 900px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.contacto-section h2 {
+  color: #a32454;
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+}
+
+.info-card {
+  padding: 30px;
+  border-radius: 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  transition: transform 0.3s;
+  margin: 30px 0;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+  color: #00bcd4;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.info-card p {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #a32454;
+  margin-bottom: 15px;
+}
+
+.info-card a {
+  display: inline-block;
+  background-color: #a32454;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.info-card a:hover {
+  background-color: #8c1c45;
+}
+
+.nota-atencion {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #fffde7;
+  border-left: 5px solid #ffd700;
+  border-radius: 5px;
+  text-align: left;
+}
+

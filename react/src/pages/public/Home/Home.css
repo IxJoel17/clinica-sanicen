@@ -1,0 +1,289 @@
+.hero {
+  background-image: linear-gradient(
+      rgba(0, 50, 100, 0.6),
+      rgba(43, 84, 126, 0.6)
+    ),
+    url("../../../assets/img/fondo.png");
+  background-size: cover;
+  background-position: center;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 40px 20px;
+  position: relative;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.btn-ver-especialidades {
+  background: linear-gradient(135deg, #e8505b 0%, #c43d47 100%);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(232, 80, 91, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.btn-ver-especialidades:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(232, 80, 91, 0.4);
+  background: linear-gradient(135deg, #c43d47 0%, #e8505b 100%);
+}
+
+.btn-ver-especialidades:active {
+  transform: translateY(-1px);
+}
+
+.arrow-down {
+  font-size: 1.5rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sección de Especialidades */
+.especialidades-section {
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+  scroll-margin-top: 80px;
+}
+
+.especialidades-header {
+  text-align: center;
+  margin-bottom: 60px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.especialidades-header h2 {
+  font-size: 2.8rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.especialidades-header p {
+  font-size: 1.2rem;
+  color: #6c757d;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.loading-especialidades {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2d9cdb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-especialidades {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+/* Grid de Especialidades */
+.especialidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.especialidad-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+.especialidad-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #e8505b 0%, #2d9cdb 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.especialidad-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.especialidad-card:hover::before {
+  transform: scaleX(1);
+}
+
+.especialidad-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.especialidad-card h3 {
+  font-size: 1.6rem;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.especialidad-card p {
+  color: #6c757d;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  font-size: 1rem;
+}
+
+.especialidad-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2d9cdb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  padding: 10px 0;
+}
+
+.especialidad-link:hover {
+  color: #e8505b;
+  gap: 12px;
+}
+
+.especialidad-link .arrow {
+  transition: transform 0.3s ease;
+}
+
+.especialidad-link:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .btn-ver-especialidades {
+    padding: 14px 30px;
+    font-size: 1rem;
+  }
+
+  .especialidades-header h2 {
+    font-size: 2rem;
+  }
+
+  .especialidades-header p {
+    font-size: 1rem;
+  }
+
+  .especialidades-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .especialidad-card {
+    padding: 30px 25px;
+  }
+
+  .especialidad-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 500px;
+    padding: 30px 15px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .especialidades-section {
+    padding: 60px 15px;
+  }
+}

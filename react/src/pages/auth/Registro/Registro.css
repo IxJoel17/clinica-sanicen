@@ -1,0 +1,128 @@
+
+.register-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  background: white;
+  position: relative;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 15%;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.maroon-bar {
+  height: 15px;
+  background-color: #8e2443;
+  flex-grow: 1;
+  border-radius: 0 10px 10px 0;
+  margin-left: 20px;
+}
+
+.content-area {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.left-icon-box {
+  width: 250px;
+  background-color: #f5f0e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  min-height: 300px;
+}
+
+.hospital-icon {
+  font-size: 8rem;
+  color: #000;
+}
+
+.form-section {
+  flex-grow: 1;
+  position: relative;
+}
+
+.title-outline {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: white;
+  -webkit-text-stroke: 2px #333;
+  letter-spacing: 2px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.input-group {
+  margin-bottom: 25px;
+  max-width: 400px;
+}
+
+.input-group label {
+  display: block;
+  color: #999;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.custom-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 0;
+  outline: none;
+  font-size: 1rem;
+  color: #333;
+}
+
+.custom-input:focus {
+  border-bottom: 2px solid #8e2443;
+}
+
+.doctors-img {
+  position: absolute;
+  right: 0;
+  top: 80px;
+  height: 250px;
+  z-index: 0;
+}
+
+.terms {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.terms input[type="radio"] {
+  accent-color: #000;
+  transform: scale(1.2);
+}
+
+.button-row {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    flex-direction: column;
+  }
+  .doctors-img {
+    display: none;
+  }
+  .left-icon-box {
+    width: 100%;
+    height: 150px;
+  }
+}
+

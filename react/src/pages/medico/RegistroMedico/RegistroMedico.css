@@ -1,0 +1,76 @@
+/* Estilos específicos de Registro Médico */
+.header-registro {
+  background-color: #a32454;
+  color: white;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.registro-card {
+  border-left: 5px solid #00bcd4;
+}
+
+.historial-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.registro-card {
+  background-color: white;
+  border-left: 5px solid #00bcd4;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.registro-card h4 {
+  color: #a32454;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.registro-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 15px;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.registro-details p {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.registro-details strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.btn-ver-detalles {
+  background-color: #a32454;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-top: 15px;
+  float: right;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-ver-detalles:hover {
+  background-color: #8c1c45;
+}
+

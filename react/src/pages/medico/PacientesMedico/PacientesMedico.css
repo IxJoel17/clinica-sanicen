@@ -1,0 +1,162 @@
+.pacientes-medico-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pacientes-medico-header {
+  margin-bottom: 30px;
+}
+
+.pacientes-medico-header h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+}
+
+.medico-nombre {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.search-section {
+  margin-bottom: 25px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2d9cdb;
+}
+
+.pacientes-count {
+  margin-bottom: 20px;
+  color: #495057;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.pacientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.paciente-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.paciente-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #2d9cdb;
+}
+
+.paciente-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.paciente-card-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #2c3e50;
+  flex: 1;
+}
+
+.estado-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado-badge.activo {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-badge.inactivo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.paciente-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paciente-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.paciente-info-item:last-child {
+  border-bottom: none;
+}
+
+.paciente-info-item strong {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.paciente-info-item span {
+  color: #2c3e50;
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.no-data {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  background: white;
+  border-radius: 15px;
+}
+
+.error-message {
+  color: #e8505b;
+  padding: 15px;
+  background: #ffe6e6;
+  border-radius: 8px;
+  border: 1px solid #ffcccc;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .pacientes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .paciente-card-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+

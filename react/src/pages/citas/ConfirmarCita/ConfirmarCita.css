@@ -1,0 +1,353 @@
+/* Estilos específicos de Confirmar Cita */
+.header-confirmacion {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #2d9cdb;
+}
+
+/* Grid de citas pendientes */
+.citas-pendientes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+/* Tarjeta de cita pendiente */
+.cita-pendiente-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 2px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cita-pendiente-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #2d9cdb;
+}
+
+/* Header de la tarjeta */
+.cita-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cita-fecha-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  padding: 10px;
+  background: linear-gradient(135deg, #2d9cdb 0%, #e8505b 100%);
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.cita-dia {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.cita-mes {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.cita-info-header {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cita-info-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  font-weight: 600;
+  flex: 1;
+}
+
+.cita-estado-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cita-estado-badge.estado-programada,
+.cita-estado-badge.estado-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.cita-estado-badge.estado-confirmada {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Body de la tarjeta */
+.cita-card-body {
+  padding: 20px;
+  flex: 1;
+}
+
+.cita-detalle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.cita-detalle:last-child {
+  margin-bottom: 0;
+}
+
+.cita-detalle-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cita-detalle > div {
+  flex: 1;
+}
+
+.cita-detalle strong {
+  display: block;
+  color: #495057;
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cita-detalle p {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Footer de la tarjeta */
+.cita-card-footer {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-top: 2px solid #f0f0f0;
+}
+
+.cita-card-footer-info {
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-top: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2d9cdb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Botón crear cita */
+.btn-crear-cita {
+  display: inline-block;
+  background: linear-gradient(135deg, #e8505b 0%, #c43d47 100%);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-crear-cita:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 80, 91, 0.3);
+}
+
+/* Botón volver */
+.btn-volver-citas {
+  display: inline-block;
+  color: #2d9cdb;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: 2px solid #2d9cdb;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-volver-citas:hover {
+  background-color: #2d9cdb;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .citas-pendientes-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cita-card-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cita-info-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-confirmacion {
+    font-size: 1.5rem;
+  }
+}
+
+/* Estilos legacy para compatibilidad (mantener por si acaso) */
+.grid-confirmacion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.registro-pago-box {
+  background-color: #e0f7fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.registro-pago-box h3 {
+  color: #00796b;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.tabla-pagos {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-pagos th,
+.tabla-pagos td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+.tabla-pagos th {
+  background-color: #a32454;
+  color: white;
+  font-weight: normal;
+}
+
+.tabla-pagos tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tabla-pagos .monto {
+  background-color: #ffcdd2;
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.confirmar-ticket-box {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.confirmar-ticket-box h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-ticket {
+  margin-bottom: 15px;
+}
+
+.input-ticket label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.input-ticket input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.btn-confirmar {
+  background-color: #a32454;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-confirmar:hover {
+  background-color: #8c1c45;
+}
+
+.success-message {
+  text-align: center;
+  margin-top: 30px;
+  color: #2ecc71;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.nota {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px dashed #a32454;
+  color: #d32f2f;
+  font-size: 0.9rem;
+  background-color: #fff8e1;
+  border-radius: 5px;
+}

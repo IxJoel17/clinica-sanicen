@@ -1,0 +1,124 @@
+.pacientes-admin-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-header-section {
+  margin-bottom: 30px;
+}
+
+.admin-header-section h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.search-section {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2d9cdb;
+}
+
+.pacientes-count {
+  margin-bottom: 15px;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.pacientes-table-container {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.pacientes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pacientes-table thead {
+  background: #f8f9fa;
+}
+
+.pacientes-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.pacientes-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #495057;
+}
+
+.pacientes-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.error-message {
+  color: #e8505b;
+  padding: 15px;
+  background: #ffe6e6;
+  border-radius: 8px;
+  border: 1px solid #ffcccc;
+  margin-bottom: 20px;
+}
+
+.success-message {
+  color: #155724;
+  padding: 15px;
+  background: #d4edda;
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .pacientes-table {
+    font-size: 0.9rem;
+  }
+}
+

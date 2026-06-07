@@ -1,0 +1,270 @@
+.citas-medico-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.citas-medico-header {
+  margin-bottom: 30px;
+}
+
+.citas-medico-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.medico-nombre {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.filtros-citas {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6c757d;
+  transition: all 0.3s ease;
+}
+
+.filtro-btn:hover {
+  border-color: #2d9cdb;
+  color: #2d9cdb;
+}
+
+.filtro-btn.active {
+  background: #2d9cdb;
+  color: white;
+  border-color: #2d9cdb;
+}
+
+.citas-list-medico {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.cita-card-medico {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.cita-card-medico:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #2d9cdb;
+}
+
+.cita-card-header-medico {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cita-fecha-badge-medico {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  padding: 10px;
+  background: linear-gradient(135deg, #2d9cdb 0%, #1e7ba8 100%);
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.cita-dia {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.cita-fecha-num {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin: 5px 0;
+}
+
+.cita-mes {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.cita-info-header-medico {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cita-info-header-medico h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.cita-estado-badge-medico {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado-programada,
+.estado-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.estado-confirmada {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-completada {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.cita-card-body-medico {
+  padding: 20px;
+}
+
+.cita-detalle-medico {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.cita-detalle-medico:last-child {
+  margin-bottom: 0;
+}
+
+.cita-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cita-detalle-medico > div {
+  flex: 1;
+}
+
+.cita-detalle-medico strong {
+  display: block;
+  color: #495057;
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cita-detalle-medico p {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.cita-card-footer-medico {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-top: 2px solid #f0f0f0;
+}
+
+.btn-confirmar-cita-medico,
+.btn-ver-detalle-medico {
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-confirmar-cita-medico {
+  background: linear-gradient(135deg, #2d9cdb 0%, #1e7ba8 100%);
+  color: white;
+}
+
+.btn-confirmar-cita-medico:hover {
+  background: linear-gradient(135deg, #1e7ba8 0%, #2d9cdb 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 156, 219, 0.3);
+}
+
+.btn-ver-detalle-medico {
+  background: white;
+  color: #2d9cdb;
+  border: 2px solid #2d9cdb;
+}
+
+.btn-ver-detalle-medico:hover {
+  background: #2d9cdb;
+  color: white;
+}
+
+.no-citas {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.no-citas-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+}
+
+.no-citas h3 {
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+.no-citas p {
+  color: #6c757d;
+}
+
+.error-message {
+  color: #e8505b;
+  padding: 15px;
+  background: #ffe6e6;
+  border-radius: 8px;
+  border: 1px solid #ffcccc;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .citas-list-medico {
+    grid-template-columns: 1fr;
+  }
+
+  .filtros-citas {
+    justify-content: center;
+  }
+}
+

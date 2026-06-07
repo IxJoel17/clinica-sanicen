@@ -1,0 +1,106 @@
+.sub-nav {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #888;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+.nav-item.active {
+  color: #29b6f6;
+  border-bottom: 2px solid #29b6f6;
+}
+
+.about-intro {
+  background-color: #5dade2;
+  color: black;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.about-intro p {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.mission-vision {
+  background-color: white;
+  padding: 50px 20px;
+  color: #333;
+}
+
+.mv-block {
+  margin-bottom: 40px;
+}
+
+.mv-block h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #000;
+}
+
+.mv-block p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* Contenedor de la infografía */
+.infografia-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  gap: 30px; /* Espacio entre el texto y las imágenes */
+}
+
+/* Estilo para el texto */
+.texto-infografia {
+  flex: 1;
+  max-width: 600px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  padding-right: 20px;
+}
+
+.texto-infografia h2 {
+  color: #0b6fd6; /* Color azul */
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.texto-infografia p {
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+/* Estilo para las imágenes */
+.imagenes-infografia {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre las imágenes */
+}
+
+.imagen {
+  width: 100%;
+  max-width: 200px; /* Ajustar el tamaño máximo de las imágenes */
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

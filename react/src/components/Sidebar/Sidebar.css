@@ -1,0 +1,81 @@
+.sidebar {
+  width: 250px;
+  background-color: #00bcd4;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.sidebar-logo h2 {
+  color: #e8505b;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.menu-items {
+  list-style: none;
+  flex-grow: 1;
+}
+
+.menu-items li {
+  margin-bottom: 15px;
+}
+
+.menu-items a {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.menu-items a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-items a.active {
+  background-color: #cddc39;
+  color: #333;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.menu-items a.active-profile {
+  background-color: #CCFF66;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu-items a.active-citas {
+  background-color: #ffeb3b;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu-items a.active-tratamiento {
+  background-color: #FFEB3B;
+  color: #333;
+  font-weight: bold;
+}
+
+.sidebar-footer a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px 0;
+  font-size: 0.9rem;
+}
+
