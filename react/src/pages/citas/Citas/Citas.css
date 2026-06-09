@@ -498,3 +498,56 @@
   font-size: 60px;
   margin-bottom: 15px;
 }
+
+/* ============================= */
+/* CITAS RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .citas-container,
+  .reserva-container,
+  .form-container,
+  .reserva-card {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .reserva-form,
+  .form-grid,
+  .reserva-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .reserva-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-realizar,
+  .btn-cancelar,
+  .btn-modal-pagar {
+    width: 100%;
+  }
+
+  .modal-pago,
+  .modal-pago-content,
+  .modal-content {
+    width: 92%;
+    max-width: 420px;
+  }
+
+  .modal-pago-body,
+  .modal-body {
+    padding: 18px;
+  }
+
+  .modal-pago-actions,
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -79,3 +79,51 @@
   font-size: 0.9rem;
 }
 
+/* ============================= */
+/* SIDEBAR RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    min-height: auto;
+  }
+
+  .sidebar-logo,
+  .sidebar-header {
+    text-align: center;
+    padding: 12px;
+  }
+
+  .sidebar nav ul,
+  .menu-items {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 10px;
+    white-space: nowrap;
+  }
+
+  .sidebar nav ul li,
+  .menu-items li {
+    flex: 0 0 auto;
+  }
+
+  .sidebar nav ul li a,
+  .menu-items li a {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  .sidebar-footer {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .sidebar-footer button {
+    width: auto;
+  }
+}
