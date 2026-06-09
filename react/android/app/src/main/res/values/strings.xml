@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Clinica Sanicen</string>
+    <string name="title_activity_main">Clinica Sanicen</string>
+    <string name="package_name">com.sanicen.clinica</string>
+    <string name="custom_url_scheme">com.sanicen.clinica</string>
+</resources>
