@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
 import { historialAPI, citasAPI } from '../../../services/api'
+import jsPDF from 'jspdf'
 import '../../../styles/common.css'
 import './DetalleRegistro.css'
 
@@ -13,6 +14,122 @@ function DetalleRegistro() {
   const [cita, setCita] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const imprimirCita = () => {
+  const ventana = window.open('', '_blank')
+
+    ventana.document.write(`
+      <html>
+        <head>
+          <title>Información de Cita</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 30px;
+              color: #2c3e50;
+            }
+
+            .documento {
+              max-width: 700px;
+              margin: auto;
+              border: 1px solid #ddd;
+              padding: 25px;
+              border-radius: 10px;
+            }
+
+            h1 {
+              text-align: center;
+              color: #e8505b;
+            }
+
+            h2 {
+              text-align: center;
+              margin-bottom: 25px;
+            }
+
+            .fila {
+              margin-bottom: 12px;
+              font-size: 16px;
+            }
+
+            .label {
+              font-weight: bold;
+            }
+
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 13px;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="documento">
+            <h1>Clínica Sanicen</h1>
+            <h2>Información de Cita Médica</h2>
+
+            <div class="fila"><span class="label">Paciente:</span> ${cita?.paciente?.nombre || ''} ${cita?.paciente?.apellido || ''}</div>
+            <div class="fila"><span class="label">Médico:</span> ${cita?.medico?.nombre || ''} ${cita?.medico?.apellido || ''}</div>
+            <div class="fila"><span class="label">Especialidad:</span> ${cita?.medico?.especialidad?.nombre || cita?.especialidad || 'No registrado'}</div>
+            <div class="fila"><span class="label">Fecha:</span> ${cita?.fecha || ''}</div>
+            <div class="fila"><span class="label">Hora:</span> ${cita?.hora || ''}</div>
+            <div class="fila"><span class="label">Motivo:</span> ${cita?.motivo || 'No registrado'}</div>
+            <div class="fila"><span class="label">Estado:</span> ${cita?.estado || 'Registrada'}</div>
+
+            <div class="footer">
+              Documento generado por el Sistema Clínica Sanicen
+            </div>
+          </div>
+        </body>
+      </html>
+    `)
+
+    ventana.document.close()
+    ventana.focus()
+    ventana.print()
+  }
+
+  const descargarCitaPDF = () => {
+    const doc = new jsPDF()
+
+    doc.setFontSize(18)
+    doc.text('Clínica Sanicen', 105, 20, { align: 'center' })
+
+    doc.setFontSize(14)
+    doc.text('Información de Cita Médica', 105, 32, { align: 'center' })
+
+    doc.setFontSize(11)
+
+    let y = 50
+
+    doc.text(`Paciente: ${cita?.paciente?.nombre || ''} ${cita?.paciente?.apellido || ''}`, 20, y)
+    y += 10
+
+    doc.text(`Médico: ${cita?.medico?.nombre || ''} ${cita?.medico?.apellido || ''}`, 20, y)
+    y += 10
+
+    doc.text(`Especialidad: ${cita?.medico?.especialidad?.nombre || cita?.especialidad || 'No registrado'}`, 20, y)
+    y += 10
+
+    doc.text(`Fecha: ${cita?.fecha || ''}`, 20, y)
+    y += 10
+
+    doc.text(`Hora: ${cita?.hora || ''}`, 20, y)
+    y += 10
+
+    doc.text(`Motivo: ${cita?.motivo || 'No registrado'}`, 20, y)
+    y += 10
+
+    doc.text(`Estado: ${cita?.estado || 'Registrada'}`, 20, y)
+    y += 20
+
+    doc.setFontSize(10)
+    doc.text('Documento generado por el Sistema Clínica Sanicen', 105, y, {
+      align: 'center',
+    })
+
+    doc.save(`cita-${cita?.idCita || Date.now()}.pdf`)
+  }
 
   useEffect(() => {
     if (idHistorial) {
@@ -185,9 +302,27 @@ function DetalleRegistro() {
             </p>
           </div>
 
-          <Link to="/citas" className="btn-volver">
-            Volver a Citas
-          </Link>
+          <div className="acciones-cita-detalle">
+            <Link to="/citas" className="btn-volver btn-volver-citas">
+              Volver a Citas
+            </Link>
+
+            <button
+              type="button"
+              className="btn-imprimir-cita"
+              onClick={imprimirCita}
+            >
+              🖨️ Imprimir
+            </button>
+
+            <button
+              type="button"
+              className="btn-descargar-cita"
+              onClick={descargarCitaPDF}
+            >
+              📄 Descargar PDF
+            </button>
+          </div>
         </div>
       </LayoutWithSidebar>
     )

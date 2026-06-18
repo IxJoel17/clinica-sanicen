@@ -7,7 +7,6 @@ import qrPlin from '../../../assets/img/pagos/qr-plin.jpeg'
 import { citasAPI, medicosAPI, especialidadesAPI, pacientesAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './Citas.css'
-
 function Citas() {
    const navigate = useNavigate()
   const { user } = useAuth()
