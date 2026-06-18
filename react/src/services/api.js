@@ -1,5 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-const API_BASE_URL = 'http://localhost:8080/api'
+import { Capacitor } from '@capacitor/core'
+
+const API_BASE_URL = Capacitor.isNativePlatform()
+  ? 'http://192.168.1.25:8080/api'
+  : 'http://localhost:8080/api'
 
 
 async function fetchAPI(endpoint, options = {}) {

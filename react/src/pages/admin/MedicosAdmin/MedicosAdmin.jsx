@@ -147,7 +147,7 @@ function MedicosAdmin() {
     <LayoutWithSidebar>
       <div className="medicos-admin-container container">
         <div className="admin-header-section">
-          <h1>NUEVOS MEDICOS</h1>
+          <h1>Gestion de médicos</h1>
           <button onClick={() => handleOpenModal()} className="btn-crear-medico">
             + Nuevo Médico
           </button>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
 import { useAuth } from '../../../context/AuthContext'
+import qrYape from '../../../assets/img/pagos/qr-yape.jpeg'
+import qrPlin from '../../../assets/img/pagos/qr-plin.jpeg'
 import { citasAPI, medicosAPI, especialidadesAPI, pacientesAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './Citas.css'
@@ -34,6 +36,11 @@ function Citas() {
 const [datosPago, setDatosPago] = useState({
   monto: 20,
   formaPago: '',
+  nombreTarjeta: '',
+  numeroTarjeta: '',
+  vencimiento: '',
+  cvv: '',
+  numeroOperacion: '',
 })
 
   // Cargar especialidades y médicos al montar
@@ -186,6 +193,11 @@ const [datosPago, setDatosPago] = useState({
         setDatosPago({
           monto: 20,
           formaPago: '',
+          nombreTarjeta: '',
+          numeroTarjeta: '',
+          vencimiento: '',
+          cvv: '',
+          numeroOperacion: '',
         })
 
         setModalPagoAbierto(true)
@@ -283,6 +295,11 @@ const [datosPago, setDatosPago] = useState({
       setDatosPago({
         monto: 20,
         formaPago: '',
+        nombreTarjeta: '',
+        numeroTarjeta: '',
+        vencimiento: '',
+        cvv: '',
+        numeroOperacion: '',
       })
     }
 
@@ -302,6 +319,24 @@ const [datosPago, setDatosPago] = useState({
     alert('Seleccione la forma de pago.')
     return
   }
+    if (datosPago.formaPago === 'TARJETA') {
+  if (
+    !datosPago.nombreTarjeta ||
+    !datosPago.numeroTarjeta ||
+    !datosPago.vencimiento ||
+    !datosPago.cvv
+  ) {
+    alert('Complete todos los datos de la tarjeta.')
+    return
+  }
+}
+
+if (datosPago.formaPago === 'TRANSFERENCIA') {
+  if (!datosPago.numeroOperacion) {
+    alert('Ingrese el número de operación de la transferencia.')
+    return
+  }
+}
 
     const boleta = {
       numeroBoleta: `B-${Date.now()}`,
@@ -630,6 +665,160 @@ const [datosPago, setDatosPago] = useState({
                         <option value="TRANSFERENCIA">Transferencia</option>
                       </select>
                     </div>
+                    
+                    {datosPago.formaPago === 'EFECTIVO' && (
+                      <div className="pago-extra-container">
+                        <p>
+                          El pago se realizará en caja al momento de la atención.
+                          Monto a pagar: <strong>S/ {datosPago.monto}</strong>
+                        </p>
+                      </div>
+                    )}
+
+                    {datosPago.formaPago === 'YAPE' && (
+                      <div className="pago-extra-container">
+                        <p><strong>Nombre:</strong> Clínica Sanicen</p>
+                        <p><strong>Número:</strong> 999 888 777</p>
+                        <p>Escanea el QR o realiza el pago al número indicado.</p>
+                      </div>
+                    )}
+
+                    {datosPago.formaPago === 'PLIN' && (
+                      <div className="pago-extra-container">
+                        <p><strong>Nombre:</strong> Clínica Sanicen</p>
+                        <p><strong>Número:</strong> 999 888 777</p>
+                        <p>Escanea el QR o realiza el pago al número indicado.</p>
+                      </div>
+                    )}
+
+                    {datosPago.formaPago === 'YAPE' && (
+                      <div className="qr-pago-container">
+                        <h3>Pago por Yape</h3>
+
+                        <p className="qr-nombre">
+                          Clínica Sanicen
+                        </p>
+
+                        <img
+                          src={qrYape}
+                          alt="QR de Yape"
+                          className="qr-pago-img"
+                        />
+
+                        <p className="qr-numero">
+                          Número: 940 737 518
+                        </p>
+
+                        <p>Escanea el QR o realiza el pago al número indicado.</p>
+                      </div>
+                    )}
+
+                    {datosPago.formaPago === 'PLIN' && (
+                      <div className="qr-pago-container">
+                        <h3>Pago por Plin</h3>
+
+                        <p className="qr-nombre">
+                          Clínica Sanicen
+                        </p>
+
+                        <img
+                          src={qrPlin}
+                          alt="QR de Plin"
+                          className="qr-pago-img"
+                        />
+
+                        <p className="qr-numero">
+                          Número: 940 737 518
+                        </p>
+
+                        <p>Escanea el QR o realiza el pago al número indicado.</p>
+                      </div>
+)}
+
+                    {datosPago.formaPago === 'TARJETA' && (
+                      <div className="pago-extra-container">
+                        <h3>Datos de la tarjeta</h3>
+
+                        <div className="form-group">
+                          <label>Nombre del titular</label>
+                          <input
+                            type="text"
+                            name="nombreTarjeta"
+                            value={datosPago.nombreTarjeta}
+                            onChange={handleChangePago}
+                            placeholder="Ej: Daniel Meza"
+                            required
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Número de tarjeta</label>
+                          <input
+                            type="text"
+                            name="numeroTarjeta"
+                            value={datosPago.numeroTarjeta}
+                            onChange={handleChangePago}
+                            placeholder="Ej: 4111 1111 1111 1111"
+                            maxLength="19"
+                            required
+                          />
+                        </div>
+
+                        <div className="tarjeta-row">
+                          <div className="form-group">
+                            <label>Vencimiento</label>
+                            <input
+                              type="text"
+                              name="vencimiento"
+                              value={datosPago.vencimiento}
+                              onChange={handleChangePago}
+                              placeholder="MM/AA"
+                              maxLength="5"
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>CVV</label>
+                            <input
+                              type="password"
+                              name="cvv"
+                              value={datosPago.cvv}
+                              onChange={handleChangePago}
+                              placeholder="***"
+                              maxLength="4"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {datosPago.formaPago === 'TRANSFERENCIA' && (
+                      <div className="pago-extra-container">
+                        <h3>Datos para transferencia</h3>
+
+                        <div className="datos-transferencia">
+                          <p><strong>Banco:</strong> BCP</p>
+                          <p><strong>Titular:</strong> Clínica Sanicen</p>
+                          <p><strong>Cuenta:</strong> 191-12345678-0-11</p>
+                          <p><strong>CCI:</strong> 002-191-001234567801-11</p>
+                          <p><strong>Monto:</strong> S/ {datosPago.monto}</p>
+                        </div>
+
+                        <div className="form-group">
+                          <label>Número de operación</label>
+                          <input
+                            type="text"
+                            name="numeroOperacion"
+                            value={datosPago.numeroOperacion}
+                            onChange={handleChangePago}
+                            placeholder="Ej: 000458921"
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="modal-pago-actions">
                       <button type="button" className="btn-modal-cancelar" onClick={cerrarModalPago}>
