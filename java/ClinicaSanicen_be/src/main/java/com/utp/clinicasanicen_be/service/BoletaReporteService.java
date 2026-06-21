@@ -16,16 +16,10 @@ public class BoletaReporteService {
 
     public byte[] generarBoletaCitaPdf(Map<String, Object> datos) {
     try {
-        System.out.println("PASO 1: Entró al servicio Jasper");
-
         ClassPathResource reportResource = new ClassPathResource("reports/boleta_cita.jrxml");
-        System.out.println("PASO 2: Existe JRXML: " + reportResource.exists());
-
         InputStream reportStream = reportResource.getInputStream();
-        System.out.println("PASO 3: Abrió el InputStream del JRXML");
 
         JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
-        System.out.println("PASO 4: Compiló el JRXML correctamente");
 
         Map<String, Object> parametros = new HashMap<>();
         parametros.put("LOGO_PATH", new ClassPathResource("static/img/logo.png").getInputStream());
@@ -36,12 +30,9 @@ public class BoletaReporteService {
         parametros.put("FECHA_EMISION", LocalDate.now().toString());
 
         parametros.putAll(datos);
-        System.out.println("PASO 5: Cargó los parámetros");
 
         JRBeanCollectionDataSource dataSource =
                 new JRBeanCollectionDataSource(List.of(datos));
-
-        System.out.println("PASO 6: Creó el datasource");
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(
                 jasperReport,
@@ -49,17 +40,11 @@ public class BoletaReporteService {
                 dataSource
         );
 
-        System.out.println("PASO 7: Llenó el reporte");
-
-        byte[] pdf = JasperExportManager.exportReportToPdf(jasperPrint);
-
-        System.out.println("PASO 8: Exportó el PDF correctamente");
-
-        return pdf;
+        return JasperExportManager.exportReportToPdf(jasperPrint);
 
     } catch (Exception e) {
         e.printStackTrace();
         throw new RuntimeException("Error al generar boleta PDF con JasperReports: " + e.getMessage(), e);
-        }
     }
+}
 }
