@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/especialidades").permitAll() // Listado público de especialidades
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/boletas/reporte/**").permitAll()
+                .requestMatchers("/api/reportes/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 // Todas las demás rutas requieren autenticación
                 .anyRequest().authenticated()
