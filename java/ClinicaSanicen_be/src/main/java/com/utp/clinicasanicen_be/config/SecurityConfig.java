@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/change-password").permitAll() // Cambio de contraseña público
                 .requestMatchers("/api/especialidades").permitAll() // Listado público de especialidades
                 .requestMatchers("/api/health").permitAll()
+                .requestMatchers("/api/boletas/reporte/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 // Todas las demás rutas requieren autenticación
                 .anyRequest().authenticated()

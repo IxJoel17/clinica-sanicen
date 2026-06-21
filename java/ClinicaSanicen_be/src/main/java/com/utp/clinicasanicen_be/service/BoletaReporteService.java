@@ -15,35 +15,51 @@ import java.util.Map;
 public class BoletaReporteService {
 
     public byte[] generarBoletaCitaPdf(Map<String, Object> datos) {
-        try {
-            ClassPathResource reportResource = new ClassPathResource("reports/boleta_cita.jrxml");
-            InputStream reportStream = reportResource.getInputStream();
+    try {
+        System.out.println("PASO 1: Entró al servicio Jasper");
 
-            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+        ClassPathResource reportResource = new ClassPathResource("reports/boleta_cita.jrxml");
+        System.out.println("PASO 2: Existe JRXML: " + reportResource.exists());
 
-            Map<String, Object> parametros = new HashMap<>();
-            parametros.put("LOGO_PATH", new ClassPathResource("static/img/logo.png").getInputStream());
-            parametros.put("NOMBRE_CLINICA", "CLÍNICA SANICEN");
-            parametros.put("RUC", "20481234567");
-            parametros.put("DIRECCION", "Av. Principal 123 - Lima, Perú");
-            parametros.put("TELEFONO", "999 888 777");
-            parametros.put("FECHA_EMISION", LocalDate.now().toString());
+        InputStream reportStream = reportResource.getInputStream();
+        System.out.println("PASO 3: Abrió el InputStream del JRXML");
 
-            parametros.putAll(datos);
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+        System.out.println("PASO 4: Compiló el JRXML correctamente");
 
-            JRBeanCollectionDataSource dataSource =
-                    new JRBeanCollectionDataSource(List.of(datos));
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("LOGO_PATH", new ClassPathResource("static/img/logo.png").getInputStream());
+        parametros.put("NOMBRE_CLINICA", "CLÍNICA SANICEN");
+        parametros.put("RUC", "20481234567");
+        parametros.put("DIRECCION", "Av. Principal 123 - Lima, Perú");
+        parametros.put("TELEFONO", "999 888 777");
+        parametros.put("FECHA_EMISION", LocalDate.now().toString());
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(
-                    jasperReport,
-                    parametros,
-                    dataSource
-            );
+        parametros.putAll(datos);
+        System.out.println("PASO 5: Cargó los parámetros");
 
-            return JasperExportManager.exportReportToPdf(jasperPrint);
+        JRBeanCollectionDataSource dataSource =
+                new JRBeanCollectionDataSource(List.of(datos));
 
-        } catch (Exception e) {
-            throw new RuntimeException("Error al generar boleta PDF con JasperReports", e);
+        System.out.println("PASO 6: Creó el datasource");
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                jasperReport,
+                parametros,
+                dataSource
+        );
+
+        System.out.println("PASO 7: Llenó el reporte");
+
+        byte[] pdf = JasperExportManager.exportReportToPdf(jasperPrint);
+
+        System.out.println("PASO 8: Exportó el PDF correctamente");
+
+        return pdf;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error al generar boleta PDF con JasperReports: " + e.getMessage(), e);
         }
     }
 }
