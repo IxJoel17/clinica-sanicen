@@ -81,6 +81,10 @@ function RecetaElectronica() {
     const day = String(date.getDate()).padStart(2, '0')
     return `R-${year}${month}${day}-${String(id).padStart(3, '0')}`
   }
+  
+  const abrirRecetaPDF = (idReceta) => {
+  window.open(`http://localhost:8080/api/reportes/recetas/${idReceta}/pdf`, '_blank')
+  }
 
   if (loading) {
     return (
@@ -139,7 +143,12 @@ function RecetaElectronica() {
                         {activa ? 'Activa' : 'Vencida'}
                       </td>
                       <td>
-                        <button className="btn-descargar">Descargar PDF</button>
+                        <button
+                          className="btn-descargar"
+                          onClick={() => abrirRecetaPDF(receta.idReceta)}
+                        >
+                          Descargar PDF
+                        </button>
                       </td>
                     </tr>
                   )

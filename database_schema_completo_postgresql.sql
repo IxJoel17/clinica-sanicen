@@ -4,6 +4,7 @@
 -- LIMPIAR TABLAS EXISTENTES
 DROP TABLE IF EXISTS venta CASCADE;
 DROP TABLE IF EXISTS boleta_pago CASCADE;
+DROP TABLE IF EXISTS detalle_receta CASCADE;
 DROP TABLE IF EXISTS receta CASCADE;
 DROP TABLE IF EXISTS historial_medico CASCADE;
 DROP TABLE IF EXISTS cita CASCADE;
@@ -136,6 +137,21 @@ CREATE TABLE receta (
 CREATE INDEX IF NOT EXISTS IX_receta_medico ON receta(id_medico);
 CREATE INDEX IF NOT EXISTS IX_receta_paciente ON receta(id_paciente);
 
+-- TABLA: detalle_receta
+CREATE TABLE detalle_receta (
+    id_detalle_receta SERIAL PRIMARY KEY,
+    id_receta INTEGER NOT NULL,
+    medicamento VARCHAR(150) NOT NULL,
+    dosis VARCHAR(100),
+    frecuencia VARCHAR(100),
+    duracion VARCHAR(100),
+    instrucciones VARCHAR(250),
+    CONSTRAINT FK_detalle_receta_receta FOREIGN KEY (id_receta)
+        REFERENCES receta(id_receta)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS IX_detalle_receta_receta ON detalle_receta(id_receta);
 -- TABLA: venta
 CREATE TABLE venta (
     id_venta SERIAL PRIMARY KEY,
@@ -439,6 +455,29 @@ INSERT INTO receta (fecha, indicaciones, id_medico, id_paciente) VALUES
 (CURRENT_TIMESTAMP, 'Indicaciones medicas registradas. Cumplir tratamiento y asistir a control.', 14, 14),
 (CURRENT_TIMESTAMP, 'Indicaciones medicas registradas. Cumplir tratamiento y asistir a control.', 15, 15);
 
+-- 8.1 DETALLE DE RECETAS DE PRUEBA
+INSERT INTO detalle_receta (id_receta, medicamento, dosis, frecuencia, duracion, instrucciones) VALUES
+(1, 'Paracetamol 500 mg', '1 tableta', 'Cada 8 horas', '3 días', 'Tomar después de los alimentos.'),
+(1, 'Ibuprofeno 400 mg', '1 tableta', 'Cada 12 horas', '2 días', 'Evitar si presenta gastritis.'),
+
+(2, 'Clorhexidina 0.12%', 'Enjuague bucal', '2 veces al día', '7 días', 'No ingerir. Usar después del cepillado.'),
+(2, 'Amoxicilina 500 mg', '1 cápsula', 'Cada 8 horas', '5 días', 'Tomar con abundante agua.'),
+
+(3, 'Loratadina 10 mg', '1 tableta', 'Cada 24 horas', '5 días', 'Tomar preferentemente por la noche.'),
+
+(4, 'Diclofenaco gel', 'Aplicación local', 'Cada 12 horas', '4 días', 'Aplicar en la zona afectada.'),
+
+(5, 'Omeprazol 20 mg', '1 cápsula', 'Cada 24 horas', '7 días', 'Tomar antes del desayuno.'),
+
+(6, 'Naproxeno 550 mg', '1 tableta', 'Cada 12 horas', '3 días', 'Tomar después de los alimentos.'),
+
+(7, 'Vitamina C 500 mg', '1 tableta', 'Cada 24 horas', '10 días', 'Tomar con agua.'),
+
+(8, 'Metamizol 500 mg', '1 tableta', 'Cada 8 horas', '3 días', 'Solo si presenta dolor.'),
+
+(9, 'Cetirizina 10 mg', '1 tableta', 'Cada 24 horas', '5 días', 'Evitar conducir si causa sueño.'),
+
+(10, 'Paracetamol 500 mg', '1 tableta', 'Cada 8 horas', '3 días', 'Tomar si presenta dolor o fiebre.');
 
 -- 9. VENTAS DE PRUEBA
 INSERT INTO venta (fecha, monto_total, id_receta, id_usuario) VALUES

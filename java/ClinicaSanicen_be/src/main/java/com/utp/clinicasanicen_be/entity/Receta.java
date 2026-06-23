@@ -32,6 +32,10 @@ public class Receta {
     private Paciente paciente;
     
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("receta")
+    private List<DetalleReceta> detalles;
+    
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Venta> ventas;
     
@@ -83,6 +87,14 @@ public class Receta {
     
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
+    }
+    
+    public List<DetalleReceta> getDetalles() {
+    return detalles;
+    }
+
+    public void setDetalles(List<DetalleReceta> detalles) {
+        this.detalles = detalles;
     }
     
     public List<Venta> getVentas() {
