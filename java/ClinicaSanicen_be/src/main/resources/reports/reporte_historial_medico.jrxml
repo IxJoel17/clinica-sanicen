@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="reporte_historial_medico"
+              pageWidth="595"
+              pageHeight="842"
+              columnWidth="515"
+              leftMargin="40"
+              rightMargin="40"
+              topMargin="30"
+              bottomMargin="30">
+
+    <parameter name="LOGO_PATH" class="java.io.InputStream"/>
+    <parameter name="NOMBRE_CLINICA" class="java.lang.String"/>
+    <parameter name="FECHA_EMISION" class="java.lang.String"/>
+
+    <parameter name="NUMERO_HISTORIAL" class="java.lang.String"/>
+    <parameter name="PACIENTE" class="java.lang.String"/>
+    <parameter name="MEDICO" class="java.lang.String"/>
+    <parameter name="ESPECIALIDAD" class="java.lang.String"/>
+    <parameter name="FECHA_REGISTRO" class="java.lang.String"/>
+    <parameter name="DIAGNOSTICO" class="java.lang.String"/>
+    <parameter name="TRATAMIENTO" class="java.lang.String"/>
+    <parameter name="OBSERVACIONES" class="java.lang.String"/>
+
+    <title>
+        <band height="760">
+
+            <rectangle>
+                <reportElement x="0" y="0" width="515" height="10" backcolor="#E8505B" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+
+            <rectangle>
+                <reportElement x="0" y="10" width="515" height="95" backcolor="#F8F9FA" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
+                </graphicElement>
+            </rectangle>
+
+            <image>
+                <reportElement x="15" y="28" width="75" height="45"/>
+                <imageExpression><![CDATA[$P{LOGO_PATH}]]></imageExpression>
+            </image>
+
+            <textField>
+                <reportElement x="100" y="25" width="240" height="22"/>
+                <textElement>
+                    <font size="15" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{NOMBRE_CLINICA}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="100" y="52" width="260" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <text><![CDATA[Reporte clínico del paciente]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="100" y="70" width="260" height="16"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Fecha de emisión: " + $P{FECHA_EMISION}]]></textFieldExpression>
+            </textField>
+
+            <rectangle>
+                <reportElement x="355" y="25" width="140" height="60" backcolor="#FFFFFF" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="1.1" lineColor="#333333"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="355" y="33" width="140" height="18"/>
+                <textElement textAlignment="Center">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[HISTORIAL MÉDICO]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="355" y="56" width="140" height="18"/>
+                <textElement textAlignment="Center">
+                    <font size="11" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{NUMERO_HISTORIAL}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="0" y="130" width="515" height="28" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="13" isBold="true"/>
+                </textElement>
+                <text><![CDATA[REPORTE DE HISTORIAL MÉDICO]]></text>
+            </staticText>
+
+            <rectangle>
+                <reportElement x="0" y="190" width="515" height="150" backcolor="#FFFFFF" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="0" y="190" width="515" height="24" backcolor="#F1F1F1" mode="Opaque"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  DATOS GENERALES DE LA ATENCIÓN]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="25" y="230" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Paciente:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="230" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{PACIENTE}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="25" y="260" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Médico:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="260" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{MEDICO}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="25" y="290" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Especialidad:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="290" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{ESPECIALIDAD}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="25" y="320" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Fecha de registro:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="320" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{FECHA_REGISTRO}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="0" y="370" width="515" height="24" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  INFORMACIÓN CLÍNICA]]></text>
+            </staticText>
+
+            <rectangle>
+                <reportElement x="0" y="394" width="515" height="225" backcolor="#FFFFFF" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="25" y="420" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Diagnóstico:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="420" width="330" height="45"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{DIAGNOSTICO}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="20" y="480" width="475" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="0.4" lineColor="#E0E0E0"/>
+                </graphicElement>
+            </line>
+
+            <staticText>
+                <reportElement x="25" y="500" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Tratamiento:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="500" width="330" height="45"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{TRATAMIENTO}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="20" y="560" width="475" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="0.4" lineColor="#E0E0E0"/>
+                </graphicElement>
+            </line>
+
+            <staticText>
+                <reportElement x="25" y="580" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Observaciones:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="580" width="330" height="30"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{OBSERVACIONES}]]></textFieldExpression>
+            </textField>
+
+            <rectangle>
+                <reportElement x="0" y="645" width="515" height="45" backcolor="#F8F9FA" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="20" y="658" width="475" height="20"/>
+                <textElement textAlignment="Center">
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <text><![CDATA[Este documento contiene información médica registrada en el sistema y debe ser tratado con confidencialidad.]]></text>
+            </staticText>
+
+            <line>
+                <reportElement x="0" y="715" width="515" height="1"/>
+            </line>
+
+            <staticText>
+                <reportElement x="0" y="730" width="515" height="14"/>
+                <textElement textAlignment="Center">
+                    <font size="7"/>
+                </textElement>
+                <text><![CDATA[Documento generado automáticamente por el Sistema Clínica Sanicen.]]></text>
+            </staticText>
+
+        </band>
+    </title>
+
+</jasperReport>
