@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ public class RecetaController {
         List<Map<String, Object>> recetas = recetaRepository.findByPacienteIdPaciente(idPaciente).stream()
             .map(this::mapRecetaToSimpleMap)
             .collect(Collectors.toList());
+
         return ResponseEntity.ok(recetas);
     }
     
@@ -70,30 +73,7 @@ public class RecetaController {
             receta.setPaciente(paciente.get());
             receta.setIndicaciones((String) request.get("indicaciones"));
 
-            List<DetalleReceta> detallesReceta = new ArrayList<>();
-
-            Object detallesObj = request.get("detalles");
-
-            if (detallesObj instanceof List<?>) {
-                List<?> detallesList = (List<?>) detallesObj;
-
-                for (Object item : detallesList) {
-                    if (item instanceof Map<?, ?>) {
-                        Map<?, ?> detalleMap = (Map<?, ?>) item;
-
-                        DetalleReceta detalle = new DetalleReceta();
-                        detalle.setReceta(receta);
-                        detalle.setMedicamento((String) detalleMap.get("medicamento"));
-                        detalle.setDosis((String) detalleMap.get("dosis"));
-                        detalle.setFrecuencia((String) detalleMap.get("frecuencia"));
-                        detalle.setDuracion((String) detalleMap.get("duracion"));
-                        detalle.setInstrucciones((String) detalleMap.get("instrucciones"));
-
-                        detallesReceta.add(detalle);
-                    }
-                }
-            }
-
+            List<DetalleReceta> detallesReceta = construirDetalles(request.get("detalles"), receta);
             receta.setDetalles(detallesReceta);
             
             Receta recetaGuardada = recetaRepository.save(receta);
@@ -105,6 +85,79 @@ public class RecetaController {
             error.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Map<String, Object> request) {
+        try {
+            Optional<Receta> recetaOpt = recetaRepository.findById(id);
+
+            if (recetaOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Receta receta = recetaOpt.get();
+
+            if (receta.getFecha() == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "La receta no tiene fecha registrada");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            }
+
+            long minutosTranscurridos = ChronoUnit.MINUTES.between(receta.getFecha(), LocalDateTime.now());
+
+            if (minutosTranscurridos > 10) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "La receta ya no puede modificarse porque superó los 10 minutos permitidos");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+
+            receta.setIndicaciones((String) request.get("indicaciones"));
+
+            List<DetalleReceta> nuevosDetalles = construirDetalles(request.get("detalles"), receta);
+
+            if (receta.getDetalles() == null) {
+                receta.setDetalles(new ArrayList<>());
+            }
+
+            receta.getDetalles().clear();
+            receta.getDetalles().addAll(nuevosDetalles);
+
+            Receta recetaActualizada = recetaRepository.save(receta);
+
+            return ResponseEntity.ok(mapRecetaToSimpleMap(recetaActualizada));
+
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    private List<DetalleReceta> construirDetalles(Object detallesObj, Receta receta) {
+        List<DetalleReceta> detallesReceta = new ArrayList<>();
+
+        if (detallesObj instanceof List<?>) {
+            List<?> detallesList = (List<?>) detallesObj;
+
+            for (Object item : detallesList) {
+                if (item instanceof Map<?, ?>) {
+                    Map<?, ?> detalleMap = (Map<?, ?>) item;
+
+                    DetalleReceta detalle = new DetalleReceta();
+                    detalle.setReceta(receta);
+                    detalle.setMedicamento((String) detalleMap.get("medicamento"));
+                    detalle.setDosis((String) detalleMap.get("dosis"));
+                    detalle.setFrecuencia((String) detalleMap.get("frecuencia"));
+                    detalle.setDuracion((String) detalleMap.get("duracion"));
+                    detalle.setInstrucciones((String) detalleMap.get("instrucciones"));
+
+                    detallesReceta.add(detalle);
+                }
+            }
+        }
+
+        return detallesReceta;
     }
     
     private Map<String, Object> mapRecetaToSimpleMap(Receta receta) {
@@ -118,6 +171,14 @@ public class RecetaController {
             medicoMap.put("idMedico", receta.getMedico().getIdMedico());
             medicoMap.put("nombre", receta.getMedico().getNombre());
             medicoMap.put("apellido", receta.getMedico().getApellido());
+
+            if (receta.getMedico().getEspecialidad() != null) {
+                Map<String, Object> especialidadMap = new HashMap<>();
+                especialidadMap.put("idEspecialidad", receta.getMedico().getEspecialidad().getIdEspecialidad());
+                especialidadMap.put("nombre", receta.getMedico().getEspecialidad().getNombre());
+                medicoMap.put("especialidad", especialidadMap);
+            }
+
             map.put("medico", medicoMap);
         }
         

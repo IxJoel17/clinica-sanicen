@@ -526,6 +526,158 @@
   border: 1px solid #d6c79a;
   cursor: not-allowed;
 }
+.editar-receta-box {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 12px;
+  background: #fff8e6;
+  border: 1px solid #e8d49b;
+}
+
+.editar-receta-box h4 {
+  margin-bottom: 16px;
+  color: #7a5a12;
+}
+
+.acciones-editar-receta {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-guardar-edicion-receta {
+  background: #d9a11d;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-guardar-edicion-receta:hover {
+  background: #bf8d16;
+}
+
+.btn-cancelar-edicion-receta {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar-edicion-receta:hover {
+  background: #4b5563;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2d9cdb;
+}
+
+.btn-agregar-medicamento {
+  background-color: #e8505b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px 0 18px 0;
+  font-weight: 600;
+}
+
+.btn-agregar-medicamento:hover {
+  background-color: #d9434d;
+}
+
+.tabla-medicamentos {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0 20px 0;
+  background-color: white;
+}
+
+.tabla-medicamentos th,
+.tabla-medicamentos td {
+  border: 1px solid #ddd;
+  padding: 9px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.tabla-medicamentos th {
+  background-color: #f4f4f4;
+  font-weight: 700;
+}
+
+.btn-eliminar-medicamento {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 7px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.acciones-historial {
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+.btn-historial-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #2d9cdb;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 8px rgba(45, 156, 219, 0.25);
+}
+
+.btn-historial-pdf:hover {
+  background: #217fc0;
+  transform: translateY(-1px);
+}
+
+.btn-receta-pdf:hover,
+.btn-receta-editar:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.tiempo-edicion {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 2px;
+}
 
 @media (max-width: 768px) {
 .detalle-cita-header {
@@ -553,5 +705,20 @@
   .receta-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+    .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-receta,
+  .acciones-editar-receta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tabla-medicamentos {
+    font-size: 12px;
+    overflow-x: auto;
+    display: block;
   }
 }

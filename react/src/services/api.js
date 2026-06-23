@@ -241,18 +241,23 @@ export const historialAPI = {
 
 export const recetasAPI = {
   getByPaciente: async (idPaciente) => {
-    return await fetchAPI(`/recetas/paciente/${idPaciente}`)
+    const response = await api.get(`/recetas/paciente/${idPaciente}`)
+    return response.data
   },
 
   getById: async (id) => {
-    return await fetchAPI(`/recetas/${id}`)
+    const response = await api.get(`/recetas/${id}`)
+    return response.data
   },
 
-  create: async (recetaData) => {
-    return await fetchAPI('/recetas', {
-      method: 'POST',
-      body: JSON.stringify(recetaData),
-    })
+  create: async (data) => {
+    const response = await api.post('/recetas', data)
+    return response.data
+  },
+
+  update: async (idReceta, data) => {
+    const response = await api.put(`/recetas/${idReceta}`, data)
+    return response.data
   },
 }
 

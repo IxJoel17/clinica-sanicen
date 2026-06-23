@@ -14,13 +14,11 @@ function DetalleCitaMedico() {
   const [cita, setCita] = useState(null)
   const [medicoInfo, setMedicoInfo] = useState(null)
   const [historiales, setHistoriales] = useState([])
-  const [recetas, setRecetas] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingHistorial, setLoadingHistorial] = useState(false)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
-
   const [asistio, setAsistio] = useState(null)
 
   const [historialData, setHistorialData] = useState({
@@ -43,6 +41,22 @@ function DetalleCitaMedico() {
 
   const [detallesReceta, setDetallesReceta] = useState([])
 
+  const [recetaEditando, setRecetaEditando] = useState(null)
+
+  const [recetaEditData, setRecetaEditData] = useState({
+    indicaciones: '',
+  })
+
+  const [detalleEditMedicamento, setDetalleEditMedicamento] = useState({
+    medicamento: '',
+    dosis: '',
+    frecuencia: '',
+    duracion: '',
+    instrucciones: '',
+  })
+
+  const [detallesEditReceta, setDetallesEditReceta] = useState([])
+
   useEffect(() => {
     if (user?.correo && id) {
       cargarDatos()
@@ -51,6 +65,7 @@ function DetalleCitaMedico() {
 
   const cargarDatos = async () => {
     setLoading(true)
+
     try {
       const medico = await medicosAPI.getByCorreo(user.correo)
       setMedicoInfo(medico)
@@ -59,7 +74,7 @@ function DetalleCitaMedico() {
       setCita(citaData)
 
       if (citaData?.paciente?.idPaciente) {
-        cargarHistorialPaciente(citaData.paciente.idPaciente)
+        await cargarHistorialPaciente(citaData.paciente.idPaciente)
       }
     } catch (err) {
       console.error('Error cargando datos:', err)
@@ -71,6 +86,7 @@ function DetalleCitaMedico() {
 
   const cargarHistorialPaciente = async (idPaciente) => {
     setLoadingHistorial(true)
+
     try {
       const [historialesData, recetasData] = await Promise.all([
         historialAPI.getAllByPaciente(idPaciente).catch(() => []),
@@ -90,24 +106,17 @@ function DetalleCitaMedico() {
       })
 
       const historialesConRecetas = historialesOrdenados.map((historial) => {
-        const fechaHistorial = new Date(historial.fechaRegistro || historial.fechaCreacion || historial.fecha)
-        const fechaHistorialDia = fechaHistorial.toDateString()
-
         const recetasRelacionadas = recetasOrdenadas.filter((receta) => {
-          const fechaReceta = new Date(receta.fecha || receta.fechaCreacion || receta.fechaRegistro)
-          const fechaRecetaDia = fechaReceta.toDateString()
-
-          return (
-            fechaHistorialDia === fechaRecetaDia &&
-            historial.medico?.idMedico === receta.medico?.idMedico
-          )
+          return historial.medico?.idMedico === receta.medico?.idMedico
         })
 
-        return { ...historial, recetas: recetasRelacionadas }
+        return {
+          ...historial,
+          recetas: recetasRelacionadas,
+        }
       })
 
       setHistoriales(historialesConRecetas)
-      setRecetas(recetasOrdenadas)
     } catch (err) {
       console.error('Error cargando historial del paciente:', err)
     } finally {
@@ -250,6 +259,7 @@ function DetalleCitaMedico() {
 
   const formatFecha = (fecha) => {
     if (!fecha) return ''
+
     try {
       return new Date(fecha).toLocaleDateString('es-ES', {
         weekday: 'long',
@@ -264,6 +274,7 @@ function DetalleCitaMedico() {
 
   const formatFechaCorta = (fecha) => {
     if (!fecha) return ''
+
     try {
       return new Date(fecha).toLocaleDateString('es-ES', {
         day: '2-digit',
@@ -284,30 +295,124 @@ function DetalleCitaMedico() {
     window.open(`http://localhost:8080/api/reportes/recetas/${idReceta}/pdf`, '_blank')
   }
 
+  const abrirHistorialPDF = (idHistorial) => {
+    window.open(`http://localhost:8080/api/reportes/historial/${idHistorial}/pdf`, '_blank')
+  }
+
+  const minutosDesdeReceta = (fechaReceta) => {
+    if (!fechaReceta) return 999999
+
+    const fechaCreacion = new Date(fechaReceta)
+    const ahora = new Date()
+
+    return (ahora - fechaCreacion) / (1000 * 60)
+  }
+
   const puedeModificarReceta = (fechaReceta) => {
-  if (!fechaReceta) return false
+    const minutos = minutosDesdeReceta(fechaReceta)
+    return minutos <= 10
+  }
 
-  const fechaCreacion = new Date(fechaReceta)
-  const ahora = new Date()
-  const diferenciaMinutos = (ahora - fechaCreacion) / (1000 * 60)
+  const debeMostrarBloqueado = (fechaReceta) => {
+    const minutos = minutosDesdeReceta(fechaReceta)
+    return minutos > 10 && minutos <= 1440
+  }
 
-  return diferenciaMinutos <= 10
-}
+  const minutosRestantesEdicion = (fechaReceta) => {
+    const minutos = minutosDesdeReceta(fechaReceta)
+    const restantes = 10 - minutos
 
-const minutosRestantesEdicion = (fechaReceta) => {
-  if (!fechaReceta) return 0
+    return Math.max(0, Math.ceil(restantes))
+  }
 
-  const fechaCreacion = new Date(fechaReceta)
-  const ahora = new Date()
-  const diferenciaMinutos = (ahora - fechaCreacion) / (1000 * 60)
-  const restantes = 10 - diferenciaMinutos
+  const modificarReceta = (receta) => {
+    setRecetaEditando(receta)
 
-  return Math.max(0, Math.ceil(restantes))
-}
+    setRecetaEditData({
+      indicaciones: receta.indicaciones || '',
+    })
 
-const modificarReceta = (receta) => {
-  alert(`Modificar receta ${receta.idReceta}`)
-}
+    setDetallesEditReceta(receta.detalles || [])
+
+    setDetalleEditMedicamento({
+      medicamento: '',
+      dosis: '',
+      frecuencia: '',
+      duracion: '',
+      instrucciones: '',
+    })
+  }
+
+  const handleDetalleEditChange = (e) => {
+    const { name, value } = e.target
+
+    setDetalleEditMedicamento({
+      ...detalleEditMedicamento,
+      [name]: value,
+    })
+  }
+
+  const agregarMedicamentoEdit = () => {
+    if (!detalleEditMedicamento.medicamento.trim()) {
+      alert('Ingrese el nombre del medicamento')
+      return
+    }
+
+    setDetallesEditReceta([...detallesEditReceta, detalleEditMedicamento])
+
+    setDetalleEditMedicamento({
+      medicamento: '',
+      dosis: '',
+      frecuencia: '',
+      duracion: '',
+      instrucciones: '',
+    })
+  }
+
+  const eliminarMedicamentoEdit = (index) => {
+    const nuevosDetalles = detallesEditReceta.filter((_, i) => i !== index)
+    setDetallesEditReceta(nuevosDetalles)
+  }
+
+  const cancelarEdicionReceta = () => {
+    setRecetaEditando(null)
+
+    setRecetaEditData({
+      indicaciones: '',
+    })
+
+    setDetalleEditMedicamento({
+      medicamento: '',
+      dosis: '',
+      frecuencia: '',
+      duracion: '',
+      instrucciones: '',
+    })
+
+    setDetallesEditReceta([])
+  }
+
+  const guardarEdicionReceta = async () => {
+    if (!recetaEditando) return
+
+    try {
+      await recetasAPI.update(recetaEditando.idReceta, {
+        indicaciones: recetaEditData.indicaciones,
+        detalles: detallesEditReceta,
+      })
+
+      alert('✅ Receta modificada correctamente')
+
+      cancelarEdicionReceta()
+
+      if (cita?.paciente?.idPaciente) {
+        await cargarHistorialPaciente(cita.paciente.idPaciente)
+      }
+    } catch (err) {
+      console.error('Error modificando receta:', err)
+      alert(err.response?.data?.error || 'Error al modificar la receta')
+    }
+  }
 
   if (loading) {
     return (
@@ -362,6 +467,7 @@ const modificarReceta = (receta) => {
         <div className="detalle-cita-content">
           <div className="cita-info-section">
             <h2>Información de la Cita</h2>
+
             <div className="info-grid">
               <div className="info-item">
                 <strong>Fecha:</strong>
@@ -465,18 +571,28 @@ const modificarReceta = (receta) => {
                               </div>
                             )}
 
+                            <div className="acciones-historial">
+                              <button
+                                type="button"
+                                className="btn-historial-pdf"
+                                onClick={() => abrirHistorialPDF(historial.idHistorial)}
+                              >
+                                📄 Descargar historial PDF
+                              </button>
+                            </div>
+
                             {historial.recetas && historial.recetas.length > 0 && (
                               <div className="historial-recetas">
                                 <strong>Recetas:</strong>
 
                                 {historial.recetas.map((receta) => (
                                   <div key={receta.idReceta} className="receta-inline">
-                                    <p>{receta.indicaciones}</p>
+                                    <p>{receta.indicaciones || 'Sin indicaciones generales'}</p>
 
                                     {receta.detalles && receta.detalles.length > 0 && (
                                       <ul>
-                                        {receta.detalles.map((detalle) => (
-                                          <li key={detalle.idDetalleReceta}>
+                                        {receta.detalles.map((detalle, index) => (
+                                          <li key={detalle.idDetalleReceta || index}>
                                             {detalle.medicamento} - {detalle.dosis} -{' '}
                                             {detalle.frecuencia}
                                           </li>
@@ -485,28 +601,173 @@ const modificarReceta = (receta) => {
                                     )}
 
                                     <div className="acciones-receta">
-                                    <button
-                                      type="button"
-                                      className="btn-receta-pdf"
-                                      onClick={() => abrirRecetaPDF(receta.idReceta)}
-                                    >
-                                      📄 Descargar PDF
-                                    </button>
-
-                                    {puedeModificarReceta(receta.fecha) ? (
                                       <button
                                         type="button"
-                                        className="btn-receta-editar"
-                                        onClick={() => modificarReceta(receta)}
+                                        className="btn-receta-pdf"
+                                        onClick={() => abrirRecetaPDF(receta.idReceta)}
                                       >
-                                        ✏️ Modificar receta
+                                        📄 Descargar PDF
                                       </button>
-                                    ) : (
-                                      <span className="edicion-bloqueada">
-                                        🔒 Edición bloqueada
-                                      </span>
+
+                                      {puedeModificarReceta(receta.fecha) && (
+                                        <button
+                                          type="button"
+                                          className="btn-receta-editar"
+                                          onClick={() => modificarReceta(receta)}
+                                        >
+                                          ✏️ Modificar receta
+                                          <span className="tiempo-edicion">
+                                            {minutosRestantesEdicion(receta.fecha)} min restantes
+                                          </span>
+                                        </button>
+                                      )}
+
+                                      {debeMostrarBloqueado(receta.fecha) && (
+                                        <span className="edicion-bloqueada">
+                                          🔒 Edición bloqueada
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {recetaEditando?.idReceta === receta.idReceta && (
+                                      <div className="editar-receta-box">
+                                        <h4>Modificar receta médica</h4>
+
+                                        <div className="form-grid">
+                                          <div className="form-group">
+                                            <label>Medicamento</label>
+                                            <input
+                                              type="text"
+                                              name="medicamento"
+                                              value={detalleEditMedicamento.medicamento}
+                                              onChange={handleDetalleEditChange}
+                                              placeholder="Ej: Paracetamol 500 mg"
+                                            />
+                                          </div>
+
+                                          <div className="form-group">
+                                            <label>Dosis</label>
+                                            <input
+                                              type="text"
+                                              name="dosis"
+                                              value={detalleEditMedicamento.dosis}
+                                              onChange={handleDetalleEditChange}
+                                              placeholder="Ej: 1 tableta"
+                                            />
+                                          </div>
+
+                                          <div className="form-group">
+                                            <label>Frecuencia</label>
+                                            <input
+                                              type="text"
+                                              name="frecuencia"
+                                              value={detalleEditMedicamento.frecuencia}
+                                              onChange={handleDetalleEditChange}
+                                              placeholder="Ej: Cada 8 horas"
+                                            />
+                                          </div>
+
+                                          <div className="form-group">
+                                            <label>Duración</label>
+                                            <input
+                                              type="text"
+                                              name="duracion"
+                                              value={detalleEditMedicamento.duracion}
+                                              onChange={handleDetalleEditChange}
+                                              placeholder="Ej: 3 días"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <div className="form-group">
+                                          <label>Instrucciones</label>
+                                          <textarea
+                                            name="instrucciones"
+                                            value={detalleEditMedicamento.instrucciones}
+                                            onChange={handleDetalleEditChange}
+                                            placeholder="Ej: Tomar después de los alimentos"
+                                            rows="3"
+                                          />
+                                        </div>
+
+                                        <button
+                                          type="button"
+                                          className="btn-agregar-medicamento"
+                                          onClick={agregarMedicamentoEdit}
+                                        >
+                                          + Agregar medicamento
+                                        </button>
+
+                                        {detallesEditReceta.length > 0 && (
+                                          <table className="tabla-medicamentos">
+                                            <thead>
+                                              <tr>
+                                                <th>Medicamento</th>
+                                                <th>Dosis</th>
+                                                <th>Frecuencia</th>
+                                                <th>Duración</th>
+                                                <th>Instrucciones</th>
+                                                <th>Acción</th>
+                                              </tr>
+                                            </thead>
+
+                                            <tbody>
+                                              {detallesEditReceta.map((detalle, index) => (
+                                                <tr key={detalle.idDetalleReceta || index}>
+                                                  <td>{detalle.medicamento}</td>
+                                                  <td>{detalle.dosis}</td>
+                                                  <td>{detalle.frecuencia}</td>
+                                                  <td>{detalle.duracion}</td>
+                                                  <td>{detalle.instrucciones}</td>
+                                                  <td>
+                                                    <button
+                                                      type="button"
+                                                      className="btn-eliminar-medicamento"
+                                                      onClick={() => eliminarMedicamentoEdit(index)}
+                                                    >
+                                                      Eliminar
+                                                    </button>
+                                                  </td>
+                                                </tr>
+                                              ))}
+                                            </tbody>
+                                          </table>
+                                        )}
+
+                                        <div className="form-group">
+                                          <label>Indicaciones generales</label>
+                                          <textarea
+                                            rows="4"
+                                            value={recetaEditData.indicaciones}
+                                            onChange={(e) =>
+                                              setRecetaEditData({
+                                                ...recetaEditData,
+                                                indicaciones: e.target.value,
+                                              })
+                                            }
+                                            placeholder="Ej: Cumplir el tratamiento indicado y asistir a control."
+                                          />
+                                        </div>
+
+                                        <div className="acciones-editar-receta">
+                                          <button
+                                            type="button"
+                                            className="btn-guardar-edicion-receta"
+                                            onClick={guardarEdicionReceta}
+                                          >
+                                            💾 Guardar cambios
+                                          </button>
+
+                                          <button
+                                            type="button"
+                                            className="btn-cancelar-edicion-receta"
+                                            onClick={cancelarEdicionReceta}
+                                          >
+                                            Cancelar
+                                          </button>
+                                        </div>
+                                      </div>
                                     )}
-                                  </div>
                                   </div>
                                 ))}
                               </div>

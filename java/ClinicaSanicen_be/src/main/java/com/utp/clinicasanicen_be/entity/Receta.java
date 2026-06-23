@@ -31,7 +31,7 @@ public class Receta {
     @JsonIgnoreProperties({"citas", "historialesMedicos", "recetas", "boletasPago"})
     private Paciente paciente;
     
-    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("receta")
     private List<DetalleReceta> detalles;
     
