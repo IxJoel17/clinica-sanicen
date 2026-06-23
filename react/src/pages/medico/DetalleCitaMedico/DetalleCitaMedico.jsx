@@ -10,6 +10,7 @@ function DetalleCitaMedico() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+
   const [cita, setCita] = useState(null)
   const [medicoInfo, setMedicoInfo] = useState(null)
   const [historiales, setHistoriales] = useState([])
@@ -19,17 +20,28 @@ function DetalleCitaMedico() {
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
-  
-  // Formularios
+
   const [asistio, setAsistio] = useState(null)
+
   const [historialData, setHistorialData] = useState({
     diagnostico: '',
     tratamiento: '',
     observaciones: '',
   })
+
   const [recetaData, setRecetaData] = useState({
     indicaciones: '',
   })
+
+  const [detalleMedicamento, setDetalleMedicamento] = useState({
+    medicamento: '',
+    dosis: '',
+    frecuencia: '',
+    duracion: '',
+    instrucciones: '',
+  })
+
+  const [detallesReceta, setDetallesReceta] = useState([])
 
   useEffect(() => {
     if (user?.correo && id) {
@@ -40,15 +52,12 @@ function DetalleCitaMedico() {
   const cargarDatos = async () => {
     setLoading(true)
     try {
-      // Cargar información del médico
       const medico = await medicosAPI.getByCorreo(user.correo)
       setMedicoInfo(medico)
 
-      // Cargar detalles de la cita
       const citaData = await citasAPI.getById(id)
       setCita(citaData)
 
-      // Si hay paciente, cargar su historial y recetas
       if (citaData?.paciente?.idPaciente) {
         cargarHistorialPaciente(citaData.paciente.idPaciente)
       }
@@ -68,33 +77,32 @@ function DetalleCitaMedico() {
         recetasAPI.getByPaciente(idPaciente).catch(() => []),
       ])
 
-      // Ordenar historiales de más reciente a más antiguo
       const historialesOrdenados = (historialesData?.data || historialesData || []).sort((a, b) => {
         const fechaA = new Date(a.fechaRegistro || a.fechaCreacion || a.fecha || 0)
         const fechaB = new Date(b.fechaRegistro || b.fechaCreacion || b.fecha || 0)
-        return fechaB - fechaA // Más reciente primero
+        return fechaB - fechaA
       })
 
-      // Ordenar recetas de más reciente a más antiguo
       const recetasOrdenadas = (recetasData?.data || recetasData || []).sort((a, b) => {
         const fechaA = new Date(a.fecha || a.fechaCreacion || a.fechaRegistro || 0)
         const fechaB = new Date(b.fecha || b.fechaCreacion || b.fechaRegistro || 0)
-        return fechaB - fechaA // Más reciente primero
+        return fechaB - fechaA
       })
 
-      // Relacionar recetas con historiales por fecha (mismo día) y mismo médico
       const historialesConRecetas = historialesOrdenados.map((historial) => {
         const fechaHistorial = new Date(historial.fechaRegistro || historial.fechaCreacion || historial.fecha)
         const fechaHistorialDia = fechaHistorial.toDateString()
+
         const recetasRelacionadas = recetasOrdenadas.filter((receta) => {
           const fechaReceta = new Date(receta.fecha || receta.fechaCreacion || receta.fechaRegistro)
           const fechaRecetaDia = fechaReceta.toDateString()
-          // Misma fecha y mismo médico
+
           return (
             fechaHistorialDia === fechaRecetaDia &&
             historial.medico?.idMedico === receta.medico?.idMedico
           )
         })
+
         return { ...historial, recetas: recetasRelacionadas }
       })
 
@@ -118,13 +126,11 @@ function DetalleCitaMedico() {
     setError('')
 
     try {
-      // Actualizar estado de la cita
       await citasAPI.update(id, {
         estado: asistioPaciente ? 'confirmada' : 'cancelada',
       })
 
       if (asistioPaciente) {
-        // Si asistió, mostrar formulario para crear tratamiento y receta
         setAsistio(true)
         setShowForm(true)
       } else {
@@ -138,6 +144,59 @@ function DetalleCitaMedico() {
     }
   }
 
+  const handleDetalleChange = (e) => {
+    const { name, value } = e.target
+
+    setDetalleMedicamento({
+      ...detalleMedicamento,
+      [name]: value,
+    })
+  }
+
+  const agregarMedicamento = () => {
+    if (!detalleMedicamento.medicamento.trim()) {
+      alert('Ingrese el nombre del medicamento')
+      return
+    }
+
+    setDetallesReceta([...detallesReceta, detalleMedicamento])
+
+    setDetalleMedicamento({
+      medicamento: '',
+      dosis: '',
+      frecuencia: '',
+      duracion: '',
+      instrucciones: '',
+    })
+  }
+
+  const eliminarMedicamento = (index) => {
+    const nuevosDetalles = detallesReceta.filter((_, i) => i !== index)
+    setDetallesReceta(nuevosDetalles)
+  }
+
+  const limpiarFormulario = () => {
+    setHistorialData({
+      diagnostico: '',
+      tratamiento: '',
+      observaciones: '',
+    })
+
+    setRecetaData({
+      indicaciones: '',
+    })
+
+    setDetalleMedicamento({
+      medicamento: '',
+      dosis: '',
+      frecuencia: '',
+      duracion: '',
+      instrucciones: '',
+    })
+
+    setDetallesReceta([])
+  }
+
   const handleGuardarTratamientoYReceta = async (e) => {
     e.preventDefault()
     setError('')
@@ -148,7 +207,6 @@ function DetalleCitaMedico() {
     }
 
     try {
-      // Crear historial médico
       if (historialData.diagnostico || historialData.tratamiento) {
         await historialAPI.create({
           idPaciente: cita.paciente?.idPaciente,
@@ -159,35 +217,33 @@ function DetalleCitaMedico() {
         })
       }
 
-      // Crear receta si hay indicaciones
-      if (recetaData.indicaciones) {
+      if (recetaData.indicaciones || detallesReceta.length > 0) {
         await recetasAPI.create({
           idPaciente: cita.paciente?.idPaciente,
           idMedico: medicoInfo.idMedico,
           indicaciones: recetaData.indicaciones,
+          detalles: detallesReceta,
         })
       }
 
-      alert('✅ Tratamiento y receta guardados exitosamente')
-      
-      // Actualizar estado de la cita a completada
       await citasAPI.update(id, {
         estado: 'completada',
       })
 
-      // Recargar historial y recetas del paciente
+      alert('✅ Tratamiento y receta guardados exitosamente')
+
       if (cita?.paciente?.idPaciente) {
         await cargarHistorialPaciente(cita.paciente.idPaciente)
       }
 
-      // Cerrar el formulario
       setShowForm(false)
       setAsistio(null)
-      
-      // Recargar los datos de la cita actualizada
+      limpiarFormulario()
+
       const citaActualizada = await citasAPI.getById(id)
       setCita(citaActualizada)
     } catch (err) {
+      console.error('Error al guardar:', err)
       setError(err.response?.data?.error || 'Error al guardar el tratamiento y receta')
     }
   }
@@ -223,6 +279,35 @@ function DetalleCitaMedico() {
     if (!hora) return ''
     return hora.substring(0, 5)
   }
+
+  const abrirRecetaPDF = (idReceta) => {
+    window.open(`http://localhost:8080/api/reportes/recetas/${idReceta}/pdf`, '_blank')
+  }
+
+  const puedeModificarReceta = (fechaReceta) => {
+  if (!fechaReceta) return false
+
+  const fechaCreacion = new Date(fechaReceta)
+  const ahora = new Date()
+  const diferenciaMinutos = (ahora - fechaCreacion) / (1000 * 60)
+
+  return diferenciaMinutos <= 10
+}
+
+const minutosRestantesEdicion = (fechaReceta) => {
+  if (!fechaReceta) return 0
+
+  const fechaCreacion = new Date(fechaReceta)
+  const ahora = new Date()
+  const diferenciaMinutos = (ahora - fechaCreacion) / (1000 * 60)
+  const restantes = 10 - diferenciaMinutos
+
+  return Math.max(0, Math.ceil(restantes))
+}
+
+const modificarReceta = (receta) => {
+  alert(`Modificar receta ${receta.idReceta}`)
+}
 
   if (loading) {
     return (
@@ -272,14 +357,9 @@ function DetalleCitaMedico() {
           <h1>Detalle de Cita</h1>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <div className="detalle-cita-content">
-          {/* Información de la Cita */}
           <div className="cita-info-section">
             <h2>Información de la Cita</h2>
             <div className="info-grid">
@@ -287,14 +367,19 @@ function DetalleCitaMedico() {
                 <strong>Fecha:</strong>
                 <span>{formatFecha(cita.fecha)}</span>
               </div>
+
               <div className="info-item">
                 <strong>Hora:</strong>
                 <span>{formatHora(cita.hora)}</span>
               </div>
+
               <div className="info-item">
                 <strong>Estado:</strong>
-                <span className={`estado-badge estado-${cita.estado}`}>{cita.estado}</span>
+                <span className={`estado-badge estado-${cita.estado}`}>
+                  {cita.estado}
+                </span>
               </div>
+
               <div className="info-item full-width">
                 <strong>Motivo:</strong>
                 <span>{cita.motivo || 'Consulta médica'}</span>
@@ -302,21 +387,25 @@ function DetalleCitaMedico() {
             </div>
           </div>
 
-          {/* Información del Paciente */}
           {cita.paciente && (
             <div className="paciente-info-section">
               <h2>Información del Paciente</h2>
+
               <div className="info-grid">
                 <div className="info-item full-width">
                   <strong>Nombre:</strong>
-                  <span>{cita.paciente.nombre} {cita.paciente.apellido}</span>
+                  <span>
+                    {cita.paciente.nombre} {cita.paciente.apellido}
+                  </span>
                 </div>
+
                 {cita.paciente.nroHistoria && (
                   <div className="info-item">
                     <strong>Nro. Historia:</strong>
                     <span>{cita.paciente.nroHistoria}</span>
                   </div>
                 )}
+
                 {cita.paciente.telefono && (
                   <div className="info-item">
                     <strong>Teléfono:</strong>
@@ -325,53 +414,99 @@ function DetalleCitaMedico() {
                 )}
               </div>
 
-              {/* Historial Médico del Paciente */}
               {loadingHistorial ? (
-                <div style={{ padding: '20px', textAlign: 'center' }}>Cargando historial...</div>
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                  Cargando historial...
+                </div>
               ) : (
                 <div className="historial-paciente-section">
-                  {/* Historial Médico */}
                   {historiales.length > 0 && (
                     <div className="historial-subsection">
                       <h3>Historial Médico</h3>
+
                       <div className="historial-list">
                         {historiales.map((historial) => (
                           <div key={historial.idHistorial} className="historial-item">
                             <div className="historial-header">
                               <span className="historial-fecha">
-                                {formatFechaCorta(historial.fechaRegistro || historial.fechaCreacion || historial.fecha)}
+                                {formatFechaCorta(
+                                  historial.fechaRegistro ||
+                                    historial.fechaCreacion ||
+                                    historial.fecha
+                                )}
                               </span>
+
                               {historial.medico && (
                                 <span className="historial-medico">
-                                  Dr(a). {historial.medico.nombre} {historial.medico.apellido}
+                                  Dr(a). {historial.medico.nombre}{' '}
+                                  {historial.medico.apellido}
                                 </span>
                               )}
                             </div>
+
                             {historial.diagnostico && (
                               <div className="historial-detail">
                                 <strong>Diagnóstico:</strong>
                                 <p>{historial.diagnostico}</p>
                               </div>
                             )}
+
                             {historial.tratamiento && (
                               <div className="historial-detail">
                                 <strong>Tratamiento:</strong>
                                 <p>{historial.tratamiento}</p>
                               </div>
                             )}
+
                             {historial.observaciones && (
                               <div className="historial-detail">
                                 <strong>Observaciones:</strong>
                                 <p>{historial.observaciones}</p>
                               </div>
                             )}
-                            {/* Recetas relacionadas con este historial */}
+
                             {historial.recetas && historial.recetas.length > 0 && (
                               <div className="historial-recetas">
                                 <strong>Recetas:</strong>
+
                                 {historial.recetas.map((receta) => (
                                   <div key={receta.idReceta} className="receta-inline">
                                     <p>{receta.indicaciones}</p>
+
+                                    {receta.detalles && receta.detalles.length > 0 && (
+                                      <ul>
+                                        {receta.detalles.map((detalle) => (
+                                          <li key={detalle.idDetalleReceta}>
+                                            {detalle.medicamento} - {detalle.dosis} -{' '}
+                                            {detalle.frecuencia}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
+
+                                    <div className="acciones-receta">
+                                    <button
+                                      type="button"
+                                      className="btn-receta-pdf"
+                                      onClick={() => abrirRecetaPDF(receta.idReceta)}
+                                    >
+                                      📄 Descargar PDF
+                                    </button>
+
+                                    {puedeModificarReceta(receta.fecha) ? (
+                                      <button
+                                        type="button"
+                                        className="btn-receta-editar"
+                                        onClick={() => modificarReceta(receta)}
+                                      >
+                                        ✏️ Modificar receta
+                                      </button>
+                                    ) : (
+                                      <span className="edicion-bloqueada">
+                                        🔒 Edición bloqueada
+                                      </span>
+                                    )}
+                                  </div>
                                   </div>
                                 ))}
                               </div>
@@ -384,7 +519,8 @@ function DetalleCitaMedico() {
 
                   {historiales.length === 0 && (
                     <div style={{ padding: '20px', textAlign: 'center', color: '#6c757d' }}>
-                      No hay historial médico, tratamientos ni recetas registrados para este paciente.
+                      No hay historial médico, tratamientos ni recetas registrados para este
+                      paciente.
                     </div>
                   )}
                 </div>
@@ -392,11 +528,11 @@ function DetalleCitaMedico() {
             </div>
           )}
 
-          {/* Confirmar Asistencia */}
           {puedeConfirmar && !showForm && (
             <div className="confirmar-asistencia-section">
               <h2>Confirmar Asistencia</h2>
               <p>¿El paciente asistió a la consulta?</p>
+
               <div className="botones-asistencia">
                 <button
                   onClick={() => handleConfirmarAsistencia(true)}
@@ -405,6 +541,7 @@ function DetalleCitaMedico() {
                 >
                   ✓ Sí, asistió
                 </button>
+
                 <button
                   onClick={() => handleConfirmarAsistencia(false)}
                   disabled={confirmando}
@@ -416,13 +553,13 @@ function DetalleCitaMedico() {
             </div>
           )}
 
-          {/* Formulario de Tratamiento y Receta */}
           {showForm && asistio && (
             <form className="form-tratamiento-receta" onSubmit={handleGuardarTratamientoYReceta}>
               <h2>Registrar Tratamiento y Receta</h2>
 
               <div className="form-section">
                 <h3>Historial Médico</h3>
+
                 <div className="form-group">
                   <label htmlFor="diagnostico">Diagnóstico *</label>
                   <textarea
@@ -430,7 +567,10 @@ function DetalleCitaMedico() {
                     rows="3"
                     value={historialData.diagnostico}
                     onChange={(e) =>
-                      setHistorialData({ ...historialData, diagnostico: e.target.value })
+                      setHistorialData({
+                        ...historialData,
+                        diagnostico: e.target.value,
+                      })
                     }
                     required
                     placeholder="Ingrese el diagnóstico del paciente"
@@ -444,7 +584,10 @@ function DetalleCitaMedico() {
                     rows="4"
                     value={historialData.tratamiento}
                     onChange={(e) =>
-                      setHistorialData({ ...historialData, tratamiento: e.target.value })
+                      setHistorialData({
+                        ...historialData,
+                        tratamiento: e.target.value,
+                      })
                     }
                     required
                     placeholder="Ingrese el tratamiento recomendado"
@@ -458,7 +601,10 @@ function DetalleCitaMedico() {
                     rows="3"
                     value={historialData.observaciones}
                     onChange={(e) =>
-                      setHistorialData({ ...historialData, observaciones: e.target.value })
+                      setHistorialData({
+                        ...historialData,
+                        observaciones: e.target.value,
+                      })
                     }
                     placeholder="Observaciones adicionales (opcional)"
                   />
@@ -467,14 +613,121 @@ function DetalleCitaMedico() {
 
               <div className="form-section">
                 <h3>Receta Médica</h3>
+
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Medicamento</label>
+                    <input
+                      type="text"
+                      name="medicamento"
+                      value={detalleMedicamento.medicamento}
+                      onChange={handleDetalleChange}
+                      placeholder="Ej: Paracetamol 500 mg"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Dosis</label>
+                    <input
+                      type="text"
+                      name="dosis"
+                      value={detalleMedicamento.dosis}
+                      onChange={handleDetalleChange}
+                      placeholder="Ej: 1 tableta"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Frecuencia</label>
+                    <input
+                      type="text"
+                      name="frecuencia"
+                      value={detalleMedicamento.frecuencia}
+                      onChange={handleDetalleChange}
+                      placeholder="Ej: Cada 8 horas"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Duración</label>
+                    <input
+                      type="text"
+                      name="duracion"
+                      value={detalleMedicamento.duracion}
+                      onChange={handleDetalleChange}
+                      placeholder="Ej: 3 días"
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
-                  <label htmlFor="indicaciones">Indicaciones de la Receta</label>
+                  <label>Instrucciones</label>
                   <textarea
-                    id="indicaciones"
-                    rows="5"
+                    name="instrucciones"
+                    value={detalleMedicamento.instrucciones}
+                    onChange={handleDetalleChange}
+                    placeholder="Ej: Tomar después de los alimentos"
+                    rows="3"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="btn-agregar-medicamento"
+                  onClick={agregarMedicamento}
+                >
+                  + Agregar medicamento
+                </button>
+
+                {detallesReceta.length > 0 && (
+                  <table className="tabla-medicamentos">
+                    <thead>
+                      <tr>
+                        <th>Medicamento</th>
+                        <th>Dosis</th>
+                        <th>Frecuencia</th>
+                        <th>Duración</th>
+                        <th>Instrucciones</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {detallesReceta.map((detalle, index) => (
+                        <tr key={index}>
+                          <td>{detalle.medicamento}</td>
+                          <td>{detalle.dosis}</td>
+                          <td>{detalle.frecuencia}</td>
+                          <td>{detalle.duracion}</td>
+                          <td>{detalle.instrucciones}</td>
+                          <td>
+                            <button
+                              type="button"
+                              className="btn-eliminar-medicamento"
+                              onClick={() => eliminarMedicamento(index)}
+                            >
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                <div className="form-group">
+                  <label>Indicaciones Generales</label>
+                  <textarea
+                    name="indicaciones"
+                    rows="4"
                     value={recetaData.indicaciones}
-                    onChange={(e) => setRecetaData({ indicaciones: e.target.value })}
-                    placeholder="Ingrese las indicaciones de medicamentos, dosis, frecuencia, etc. (opcional)"
+                    onChange={(e) =>
+                      setRecetaData({
+                        ...recetaData,
+                        indicaciones: e.target.value,
+                      })
+                    }
+                    placeholder="Ej: Cumplir el tratamiento indicado y asistir a control."
                   />
                 </div>
               </div>
@@ -483,11 +736,13 @@ function DetalleCitaMedico() {
                 <button type="submit" className="btn-guardar-todo">
                   ✓ Guardar Tratamiento y Receta
                 </button>
+
                 <button
                   type="button"
                   onClick={() => {
                     setShowForm(false)
                     setAsistio(null)
+                    limpiarFormulario()
                   }}
                   className="btn-cancelar"
                 >
@@ -501,6 +756,7 @@ function DetalleCitaMedico() {
             <div className="no-asistio-section">
               <h2>Paciente No Asistió</h2>
               <p>El paciente no asistió a la consulta. La cita será marcada como cancelada.</p>
+
               <button
                 onClick={async () => {
                   try {
@@ -524,4 +780,3 @@ function DetalleCitaMedico() {
 }
 
 export default DetalleCitaMedico
-

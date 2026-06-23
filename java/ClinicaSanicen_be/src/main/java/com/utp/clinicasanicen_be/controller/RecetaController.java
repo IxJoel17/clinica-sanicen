@@ -1,5 +1,6 @@
 package com.utp.clinicasanicen_be.controller;
 
+import com.utp.clinicasanicen_be.entity.DetalleReceta;
 import com.utp.clinicasanicen_be.entity.Receta;
 import com.utp.clinicasanicen_be.entity.Medico;
 import com.utp.clinicasanicen_be.entity.Paciente;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +69,37 @@ public class RecetaController {
             receta.setMedico(medico.get());
             receta.setPaciente(paciente.get());
             receta.setIndicaciones((String) request.get("indicaciones"));
+
+            List<DetalleReceta> detallesReceta = new ArrayList<>();
+
+            Object detallesObj = request.get("detalles");
+
+            if (detallesObj instanceof List<?>) {
+                List<?> detallesList = (List<?>) detallesObj;
+
+                for (Object item : detallesList) {
+                    if (item instanceof Map<?, ?>) {
+                        Map<?, ?> detalleMap = (Map<?, ?>) item;
+
+                        DetalleReceta detalle = new DetalleReceta();
+                        detalle.setReceta(receta);
+                        detalle.setMedicamento((String) detalleMap.get("medicamento"));
+                        detalle.setDosis((String) detalleMap.get("dosis"));
+                        detalle.setFrecuencia((String) detalleMap.get("frecuencia"));
+                        detalle.setDuracion((String) detalleMap.get("duracion"));
+                        detalle.setInstrucciones((String) detalleMap.get("instrucciones"));
+
+                        detallesReceta.add(detalle);
+                    }
+                }
+            }
+
+            receta.setDetalles(detallesReceta);
             
             Receta recetaGuardada = recetaRepository.save(receta);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(mapRecetaToSimpleMap(recetaGuardada));
+
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
@@ -97,6 +127,21 @@ public class RecetaController {
             pacienteMap.put("nombre", receta.getPaciente().getNombre());
             pacienteMap.put("apellido", receta.getPaciente().getApellido());
             map.put("paciente", pacienteMap);
+        }
+
+        if (receta.getDetalles() != null) {
+            List<Map<String, Object>> detalles = receta.getDetalles().stream().map(detalle -> {
+                Map<String, Object> detalleMap = new HashMap<>();
+                detalleMap.put("idDetalleReceta", detalle.getIdDetalleReceta());
+                detalleMap.put("medicamento", detalle.getMedicamento());
+                detalleMap.put("dosis", detalle.getDosis());
+                detalleMap.put("frecuencia", detalle.getFrecuencia());
+                detalleMap.put("duracion", detalle.getDuracion());
+                detalleMap.put("instrucciones", detalle.getInstrucciones());
+                return detalleMap;
+            }).collect(Collectors.toList());
+
+            map.put("detalles", detalles);
         }
         
         return map;
