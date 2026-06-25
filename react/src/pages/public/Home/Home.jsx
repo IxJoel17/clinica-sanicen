@@ -99,6 +99,12 @@ function getEspecialidadIcon(nombre) {
     'Traumatología': '🦴',
     'Oftalmología': '👁️',
     'Otorrinolaringología': '👂',
+    'Prótesis': '🦾',
+    'TAC 3D': '',
+    'Cirugia Oral':'',
+    'Implantología':'',
+    'Medicina general': '',
+
   }
 
   for (const [key, icon] of Object.entries(iconos)) {

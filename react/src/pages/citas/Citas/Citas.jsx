@@ -7,16 +7,20 @@ import qrPlin from '../../../assets/img/pagos/qr-plin.jpeg'
 import { citasAPI, medicosAPI, especialidadesAPI, pacientesAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './Citas.css'
+
 function Citas() {
-   const navigate = useNavigate()
+  const navigate = useNavigate()
   const { user } = useAuth()
+
   const [formData, setFormData] = useState({
     idPaciente: null,
     idMedico: '',
+    especialidad: '',
     fecha: '',
     hora: '',
     motivo: '',
   })
+
   const [citas, setCitas] = useState([])
   const [medicos, setMedicos] = useState([])
   const [especialidades, setEspecialidades] = useState([])
@@ -24,25 +28,39 @@ function Citas() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [loadingCitas, setLoadingCitas] = useState(true)
+
   const [showReagendarModal, setShowReagendarModal] = useState(false)
   const [citaAReagendar, setCitaAReagendar] = useState(null)
   const [reagendarData, setReagendarData] = useState({ fecha: '', hora: '' })
+
   const [modalPagoAbierto, setModalPagoAbierto] = useState(false)
-  const [citaSeleccionadaPago, setCitaSeleccionadaPago] = useState(null)
-  const [pagoExitoso, setPagoExitoso] = useState(false)
   const [citaGuardada, setCitaGuardada] = useState(null)
+  const [pagoExitoso, setPagoExitoso] = useState(false)
 
-const [datosPago, setDatosPago] = useState({
-  monto: 20,
-  formaPago: '',
-  nombreTarjeta: '',
-  numeroTarjeta: '',
-  vencimiento: '',
-  cvv: '',
-  numeroOperacion: '',
-})
+  const [datosPago, setDatosPago] = useState({
+    monto: 20,
+    formaPago: '',
+    nombreTarjeta: '',
+    numeroTarjeta: '',
+    vencimiento: '',
+    cvv: '',
+    numeroOperacion: '',
+  })
 
-  // Cargar especialidades y médicos al montar
+  const obtenerNombreEspecialidad = (especialidad) => {
+    if (!especialidad) return 'No registrado'
+
+    if (typeof especialidad === 'string') {
+      return especialidad
+    }
+
+    if (typeof especialidad === 'object') {
+      return especialidad.nombre || especialidad.especialidadNombre || 'No registrado'
+    }
+
+    return 'No registrado'
+  }
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -50,70 +68,71 @@ const [datosPago, setDatosPago] = useState({
           especialidadesAPI.getAll(),
           medicosAPI.getAll(),
         ])
-        setEspecialidades(espData)
-        setMedicos(medData)
-        setMedicosFiltrados(medData)
+
+        setEspecialidades(Array.isArray(espData) ? espData : [])
+        setMedicos(Array.isArray(medData) ? medData : [])
+        setMedicosFiltrados(Array.isArray(medData) ? medData : [])
       } catch (err) {
         console.error('Error cargando datos:', err)
         setError('Error al cargar especialidades y médicos')
       }
     }
+
     cargarDatos()
   }, [])
 
-  // Cargar citas del paciente si está logueado
   useEffect(() => {
-    if (user?.idUsuario) {
+    if (user?.idUsuario || user?.correo) {
       cargarCitas()
     }
   }, [user])
 
   const cargarCitas = async () => {
     setLoadingCitas(true)
+
     try {
-      // Buscar al paciente por correo para obtener el idPaciente correcto
       let idPacienteParaBuscar = formData.idPaciente
-      
+
       if (!idPacienteParaBuscar && user?.correo) {
         try {
           const paciente = await pacientesAPI.getByCorreo(user.correo)
           idPacienteParaBuscar = paciente.idPaciente
-          setFormData(prev => ({ ...prev, idPaciente: idPacienteParaBuscar }))
+          setFormData((prev) => ({ ...prev, idPaciente: idPacienteParaBuscar }))
         } catch (err) {
-          // Si no existe el paciente, no hay citas aún
           console.log('Paciente no encontrado, no hay citas para mostrar')
           setCitas([])
           return
         }
       }
 
-      // Si no tenemos idPaciente, no podemos cargar citas
       if (!idPacienteParaBuscar) {
         setCitas([])
         return
       }
 
-      // Cargar citas del paciente
       const response = await citasAPI.getByPaciente(idPacienteParaBuscar)
-      const citasData = response.citas || []
-      // Ordenar citas de más recientes a más alejadas (por fecha y hora)
-      const citasOrdenadas = citasData.sort((a, b) => {
-        const fechaA = new Date(`${a.fecha}T${a.hora}`)
-        const fechaB = new Date(`${b.fecha}T${b.hora}`)
-        return fechaB - fechaA // Más recientes primero
-      })
+      const citasData = response?.citas || response?.data?.citas || response || []
+
+      const citasOrdenadas = Array.isArray(citasData)
+        ? [...citasData].sort((a, b) => {
+            const fechaA = new Date(`${a.fecha}T${a.hora}`)
+            const fechaB = new Date(`${b.fecha}T${b.hora}`)
+            return fechaB - fechaA
+          })
+        : []
+
       setCitas(citasOrdenadas)
-      
-      // Asegurar que el idPaciente esté en el formData
+
       if (!formData.idPaciente && idPacienteParaBuscar) {
-        setFormData(prev => ({ ...prev, idPaciente: idPacienteParaBuscar }))
+        setFormData((prev) => ({ ...prev, idPaciente: idPacienteParaBuscar }))
       }
     } catch (err) {
       console.error('Error cargando citas:', err)
-      // No mostrar error si simplemente no hay paciente aún
+
       if (err.response?.status !== 404) {
         setError('Error al cargar las citas')
       }
+
       setCitas([])
     } finally {
       setLoadingCitas(false)
@@ -122,22 +141,38 @@ const [datosPago, setDatosPago] = useState({
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
+
     setError('')
 
-    // Si cambia la especialidad, filtrar médicos
     if (name === 'especialidad') {
       if (value) {
-        const medicosEsp = medicos.filter(m => m.especialidad?.idEspecialidad === parseInt(value))
+        const medicosEsp = medicos.filter((m) => {
+          const idEsp =
+            m.especialidad?.idEspecialidad ||
+            m.idEspecialidad ||
+            m.especialidadId
+
+          return String(idEsp) === String(value)
+        })
+
         setMedicosFiltrados(medicosEsp)
       } else {
         setMedicosFiltrados(medicos)
       }
-      setFormData(prev => ({ ...prev, idMedico: '' }))
+
+      setFormData((prev) => ({
+        ...prev,
+        especialidad: value,
+        idMedico: '',
+      }))
+
+      return
     }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -146,74 +181,67 @@ const [datosPago, setDatosPago] = useState({
     setLoading(true)
 
     try {
-      // Asegurarse de que el paciente existe antes de crear la cita
       let idPacienteParaCita = formData.idPaciente
 
-      // Si no tenemos idPaciente, buscar por correo o crear el paciente
       if (!idPacienteParaCita && user?.correo) {
         try {
-          // Intentar buscar paciente por correo
           const paciente = await pacientesAPI.getByCorreo(user.correo)
           idPacienteParaCita = paciente.idPaciente
         } catch (err) {
-          // Si no existe el paciente, crearlo automáticamente con los datos del usuario
           console.log('Paciente no encontrado, creando automáticamente...')
+
           const nuevoPaciente = await pacientesAPI.create({
             nombre: user.nombre || '',
             apellido: user.apellido || '',
             correo: user.correo || '',
             telefono: user.telefono || '',
             direccion: user.direccion || '',
-            // El número de historia se generará automáticamente en el backend
           })
+
           idPacienteParaCita = nuevoPaciente.idPaciente
-          // Actualizar el formData con el nuevo idPaciente
-          setFormData(prev => ({ ...prev, idPaciente: idPacienteParaCita }))
+          setFormData((prev) => ({ ...prev, idPaciente: idPacienteParaCita }))
         }
       }
 
-      // Si aún no tenemos idPaciente, mostrar error
       if (!idPacienteParaCita) {
         throw new Error('No se pudo obtener o crear el perfil del paciente. Por favor, completa tu perfil primero.')
       }
 
-      // Crear la cita con el idPaciente correcto
       const response = await citasAPI.create({
         idPaciente: idPacienteParaCita,
         idMedico: parseInt(formData.idMedico),
         fecha: formData.fecha,
-        hora: formData.hora + ':00', // Asegurar formato HH:mm:ss
+        hora: formData.hora + ':00',
         motivo: formData.motivo,
       })
+
       const nuevaCita = response?.data || response
+      setCitaGuardada(nuevaCita)
 
-        setCitaGuardada(nuevaCita)
+      setDatosPago({
+        monto: 20,
+        formaPago: '',
+        nombreTarjeta: '',
+        numeroTarjeta: '',
+        vencimiento: '',
+        cvv: '',
+        numeroOperacion: '',
+      })
 
-        setDatosPago({
-          monto: 20,
-          formaPago: '',
-          nombreTarjeta: '',
-          numeroTarjeta: '',
-          vencimiento: '',
-          cvv: '',
-          numeroOperacion: '',
-        })
+      setModalPagoAbierto(true)
 
-        setModalPagoAbierto(true)
-
-      // Limpiar formulario
       setFormData({
-        ...formData,
-        idPaciente: idPacienteParaCita, // Mantener el idPaciente
+        idPaciente: idPacienteParaCita,
         idMedico: '',
+        especialidad: '',
         fecha: '',
         hora: '',
         motivo: '',
       })
 
-      // Recargar citas
+      setMedicosFiltrados(medicos)
+
       await cargarCitas()
-      //navigate('/confirmar-cita')
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Error al crear la cita. Intenta nuevamente.')
       console.error('Error al crear cita:', err)
@@ -225,6 +253,7 @@ const [datosPago, setDatosPago] = useState({
   const formatFecha = (fecha) => {
     if (!fecha) return ''
     const date = new Date(fecha)
+
     return date.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
@@ -234,7 +263,7 @@ const [datosPago, setDatosPago] = useState({
 
   const formatHora = (hora) => {
     if (!hora) return ''
-    return hora.substring(0, 5) // HH:mm
+    return hora.substring(0, 5)
   }
 
   const handleCancelarCita = async (idCita) => {
@@ -270,14 +299,16 @@ const [datosPago, setDatosPago] = useState({
 
   const handleReagendarCita = async (e) => {
     e.preventDefault()
+
     if (!citaAReagendar) return
 
     try {
       await citasAPI.update(citaAReagendar.idCita, {
         fecha: reagendarData.fecha,
         hora: reagendarData.hora + ':00',
-        estado: 'programada', // Mantener como programada
+        estado: 'programada',
       })
+
       setError('')
       await cargarCitas()
       handleCerrarReagendar()
@@ -287,55 +318,56 @@ const [datosPago, setDatosPago] = useState({
     }
   }
 
-    const cerrarModalPago = () => {
-      setModalPagoAbierto(false)
-      setPagoExitoso(false)
-      setCitaGuardada(null)
-      setDatosPago({
-        monto: 20,
-        formaPago: '',
-        nombreTarjeta: '',
-        numeroTarjeta: '',
-        vencimiento: '',
-        cvv: '',
-        numeroOperacion: '',
-      })
-    }
-
-    const handleChangePago = (e) => {
-      const { name, value } = e.target
-
-      setDatosPago({
-        ...datosPago,
-        [name]: value,
-      })
-    }
-
-    const confirmarPago = (e) => {
-  e.preventDefault()
-
-  if (!datosPago.formaPago) {
-    alert('Seleccione la forma de pago.')
-    return
+  const cerrarModalPago = () => {
+    setModalPagoAbierto(false)
+    setPagoExitoso(false)
+    setCitaGuardada(null)
+    setDatosPago({
+      monto: 20,
+      formaPago: '',
+      nombreTarjeta: '',
+      numeroTarjeta: '',
+      vencimiento: '',
+      cvv: '',
+      numeroOperacion: '',
+    })
   }
+
+  const handleChangePago = (e) => {
+    const { name, value } = e.target
+
+    setDatosPago((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const confirmarPago = (e) => {
+    e.preventDefault()
+
+    if (!datosPago.formaPago) {
+      alert('Seleccione la forma de pago.')
+      return
+    }
+
     if (datosPago.formaPago === 'TARJETA') {
-  if (
-    !datosPago.nombreTarjeta ||
-    !datosPago.numeroTarjeta ||
-    !datosPago.vencimiento ||
-    !datosPago.cvv
-  ) {
-    alert('Complete todos los datos de la tarjeta.')
-    return
-  }
-}
+      if (
+        !datosPago.nombreTarjeta ||
+        !datosPago.numeroTarjeta ||
+        !datosPago.vencimiento ||
+        !datosPago.cvv
+      ) {
+        alert('Complete todos los datos de la tarjeta.')
+        return
+      }
+    }
 
-if (datosPago.formaPago === 'TRANSFERENCIA') {
-  if (!datosPago.numeroOperacion) {
-    alert('Ingrese el número de operación de la transferencia.')
-    return
-  }
-}
+    if (datosPago.formaPago === 'TRANSFERENCIA') {
+      if (!datosPago.numeroOperacion) {
+        alert('Ingrese el número de operación de la transferencia.')
+        return
+      }
+    }
 
     const boleta = {
       numeroBoleta: `B-${Date.now()}`,
@@ -354,7 +386,6 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
       setModalPagoAbierto(false)
       setPagoExitoso(false)
       setCitaGuardada(null)
-      //navigate('/confirmar-cita')
     }, 2000)
   }
 
@@ -403,7 +434,15 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
           <div className="header-citas">Registro de citas medicas</div>
 
           {error && (
-            <div style={{ color: '#E8505B', marginBottom: '15px', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '5px' }}>
+            <div
+              style={{
+                color: '#E8505B',
+                marginBottom: '15px',
+                padding: '10px',
+                backgroundColor: '#ffe6e6',
+                borderRadius: '5px',
+              }}
+            >
               {error}
             </div>
           )}
@@ -417,6 +456,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
               <form onSubmit={handleSubmit}>
                 <div className="input-group">
                   <label htmlFor="especialidad">Especialidad</label>
+
                   <select
                     id="especialidad"
                     name="especialidad"
@@ -425,6 +465,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                     required
                   >
                     <option value="">Seleccione</option>
+
                     {especialidades.map((esp) => (
                       <option key={esp.idEspecialidad} value={esp.idEspecialidad}>
                         {esp.nombre}
@@ -435,6 +476,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
 
                 <div className="input-group">
                   <label htmlFor="doctor">Médico de atención</label>
+
                   <select
                     id="doctor"
                     name="idMedico"
@@ -444,9 +486,11 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                     disabled={!formData.especialidad}
                   >
                     <option value="">Seleccione un médico</option>
+
                     {medicosFiltrados.map((med) => (
                       <option key={med.idMedico} value={med.idMedico}>
-                        {med.nombre} {med.apellido} {med.especialidad ? `(${med.especialidad.nombre})` : ''}
+                        {med.nombre} {med.apellido}{' '}
+                        {med.especialidad ? `(${obtenerNombreEspecialidad(med.especialidad)})` : ''}
                       </option>
                     ))}
                   </select>
@@ -454,6 +498,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
 
                 <div className="input-group">
                   <label htmlFor="date">Fecha de cita</label>
+
                   <input
                     type="date"
                     id="date"
@@ -494,6 +539,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
 
                 <div className="input-group">
                   <label htmlFor="motivo">Motivo de consulta</label>
+
                   <textarea
                     id="motivo"
                     name="motivo"
@@ -505,13 +551,9 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                 </div>
 
                 <div className="reserva-buttons" style={{ marginTop: '30px' }}>
-                <button
-                  type="submit"
-                  className="btn-realizar"
-                  disabled={loading}
-                >
-                  {loading ? 'PROCESANDO...' : 'Registrar cita'}
-                </button>
+                  <button type="submit" className="btn-realizar" disabled={loading}>
+                    {loading ? 'PROCESANDO...' : 'Registrar cita'}
+                  </button>
 
                   <button
                     type="reset"
@@ -546,46 +588,61 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                 <div className="no-citas-message">
                   <div className="no-citas-icon">📅</div>
                   <p>No tiene citas agendadas</p>
-                  <span className="no-citas-subtitle">Cuando agende una cita, aparecerá aquí</span>
+                  <span className="no-citas-subtitle">
+                    Cuando agende una cita, aparecerá aquí
+                  </span>
                 </div>
               ) : (
                 <div className="citas-cards-container">
                   {citas.map((cita) => (
                     <div key={cita.idCita} className="cita-card">
                       <div className="cita-card-header">
-                        <h4 className="cita-motivo">{cita.motivo || 'Consulta médica'}</h4>
+                        <h4 className="cita-motivo">
+                          {cita.motivo || 'Consulta médica'}
+                        </h4>
+
                         <span
-                          className={`cita-estado estado-${cita.estado?.toLowerCase() || 'programada'}`}
+                          className={`cita-estado estado-${
+                            cita.estado?.toLowerCase() || 'programada'
+                          }`}
                         >
                           {cita.estado || 'programada'}
                         </span>
                       </div>
-                      
+
                       <div className="cita-card-body">
                         <div className="cita-info-item">
                           <span className="cita-icon">📅</span>
+
                           <div className="cita-info-content">
                             <span className="cita-label">Fecha y Hora</span>
+
                             <span className="cita-value">
                               {formatFecha(cita.fecha)} - {formatHora(cita.hora)}
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="cita-info-item">
                           <span className="cita-icon">👨‍⚕️</span>
+
                           <div className="cita-info-content">
                             <span className="cita-label">Médico</span>
+
                             <span className="cita-value">
                               Dr(a). {cita.medico?.nombre} {cita.medico?.apellido}
+
                               {cita.medico?.especialidad && (
-                                <span className="cita-especialidad"> - {cita.medico.especialidad}</span>
+                                <span className="cita-especialidad">
+                                  {' - '}
+                                  {obtenerNombreEspecialidad(cita.medico.especialidad)}
+                                </span>
                               )}
                             </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="cita-card-actions">
                         <Link
                           to={`/detalle-registro?citaId=${cita.idCita}`}
@@ -594,6 +651,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                           <span>📋</span>
                           Ver información
                         </Link>
+
                         {puedeCancelarOReagendar(cita) && (
                           <>
                             <button
@@ -603,6 +661,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                               <span>❌</span>
                               Cancelar
                             </button>
+
                             <button
                               onClick={() => handleAbrirReagendar(cita)}
                               className="btn-cita-reagendar"
@@ -623,7 +682,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
           </div>
         </div>
       </div>
-        {/* Modal para Pago */}
+
       {modalPagoAbierto && (
         <div className="modal-pago-overlay">
           <div className="modal-pago-box">
@@ -631,6 +690,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
               <>
                 <div className="modal-pago-header">
                   <h2>Pago de cita médica</h2>
+
                   <button className="modal-pago-close" onClick={cerrarModalPago}>
                     ×
                   </button>
@@ -640,6 +700,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                   <form onSubmit={confirmarPago}>
                     <div className="input-group">
                       <label>Monto a pagar</label>
+
                       <input
                         type="number"
                         name="monto"
@@ -650,6 +711,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
 
                     <div className="input-group">
                       <label>Forma de pago</label>
+
                       <select
                         name="formaPago"
                         value={datosPago.formaPago}
@@ -664,7 +726,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                         <option value="TRANSFERENCIA">Transferencia</option>
                       </select>
                     </div>
-                    
+
                     {datosPago.formaPago === 'EFECTIVO' && (
                       <div className="pago-extra-container">
                         <p>
@@ -675,39 +737,13 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                     )}
 
                     {datosPago.formaPago === 'YAPE' && (
-                      <div className="pago-extra-container">
-                        <p><strong>Nombre:</strong> Clínica Sanicen</p>
-                        <p><strong>Número:</strong> 999 888 777</p>
-                        <p>Escanea el QR o realiza el pago al número indicado.</p>
-                      </div>
-                    )}
-
-                    {datosPago.formaPago === 'PLIN' && (
-                      <div className="pago-extra-container">
-                        <p><strong>Nombre:</strong> Clínica Sanicen</p>
-                        <p><strong>Número:</strong> 999 888 777</p>
-                        <p>Escanea el QR o realiza el pago al número indicado.</p>
-                      </div>
-                    )}
-
-                    {datosPago.formaPago === 'YAPE' && (
                       <div className="qr-pago-container">
                         <h3>Pago por Yape</h3>
+                        <p className="qr-nombre">Clínica Sanicen</p>
 
-                        <p className="qr-nombre">
-                          Clínica Sanicen
-                        </p>
+                        <img src={qrYape} alt="QR de Yape" className="qr-pago-img" />
 
-                        <img
-                          src={qrYape}
-                          alt="QR de Yape"
-                          className="qr-pago-img"
-                        />
-
-                        <p className="qr-numero">
-                          Número: 940 737 518
-                        </p>
-
+                        <p className="qr-numero">Número: 940 737 518</p>
                         <p>Escanea el QR o realiza el pago al número indicado.</p>
                       </div>
                     )}
@@ -715,24 +751,14 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                     {datosPago.formaPago === 'PLIN' && (
                       <div className="qr-pago-container">
                         <h3>Pago por Plin</h3>
+                        <p className="qr-nombre">Clínica Sanicen</p>
 
-                        <p className="qr-nombre">
-                          Clínica Sanicen
-                        </p>
+                        <img src={qrPlin} alt="QR de Plin" className="qr-pago-img" />
 
-                        <img
-                          src={qrPlin}
-                          alt="QR de Plin"
-                          className="qr-pago-img"
-                        />
-
-                        <p className="qr-numero">
-                          Número: 940 737 518
-                        </p>
-
+                        <p className="qr-numero">Número: 940 737 518</p>
                         <p>Escanea el QR o realiza el pago al número indicado.</p>
                       </div>
-)}
+                    )}
 
                     {datosPago.formaPago === 'TARJETA' && (
                       <div className="pago-extra-container">
@@ -798,15 +824,26 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                         <h3>Datos para transferencia</h3>
 
                         <div className="datos-transferencia">
-                          <p><strong>Banco:</strong> BCP</p>
-                          <p><strong>Titular:</strong> Clínica Sanicen</p>
-                          <p><strong>Cuenta:</strong> 191-12345678-0-11</p>
-                          <p><strong>CCI:</strong> 002-191-001234567801-11</p>
-                          <p><strong>Monto:</strong> S/ {datosPago.monto}</p>
+                          <p>
+                            <strong>Banco:</strong> BCP
+                          </p>
+                          <p>
+                            <strong>Titular:</strong> Clínica Sanicen
+                          </p>
+                          <p>
+                            <strong>Cuenta:</strong> 191-12345678-0-11
+                          </p>
+                          <p>
+                            <strong>CCI:</strong> 002-191-001234567801-11
+                          </p>
+                          <p>
+                            <strong>Monto:</strong> S/ {datosPago.monto}
+                          </p>
                         </div>
 
                         <div className="form-group">
                           <label>Número de operación</label>
+
                           <input
                             type="text"
                             name="numeroOperacion"
@@ -820,7 +857,11 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                     )}
 
                     <div className="modal-pago-actions">
-                      <button type="button" className="btn-modal-cancelar" onClick={cerrarModalPago}>
+                      <button
+                        type="button"
+                        className="btn-modal-cancelar"
+                        onClick={cerrarModalPago}
+                      >
                         Cancelar
                       </button>
 
@@ -842,7 +883,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
           </div>
         </div>
       )}
-      {/* Modal para Reagendar */}
+
       {showReagendarModal && citaAReagendar && (
         <div
           style={{
@@ -871,12 +912,15 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 style={{ marginTop: 0 }}>Reagendar Cita</h2>
+
             <p style={{ color: '#666' }}>
               <strong>Médico:</strong> {citaAReagendar.medico?.nombre}{' '}
               {citaAReagendar.medico?.apellido}
             </p>
+
             <p style={{ color: '#666' }}>
-              <strong>Motivo:</strong> {citaAReagendar.motivo || 'Consulta médica'}
+              <strong>Motivo:</strong>{' '}
+              {citaAReagendar.motivo || 'Consulta médica'}
             </p>
 
             <form onSubmit={handleReagendarCita}>
@@ -887,6 +931,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                 >
                   Nueva Fecha
                 </label>
+
                 <input
                   id="fecha-reagendar"
                   type="date"
@@ -913,6 +958,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                 >
                   Nueva Hora
                 </label>
+
                 <input
                   id="hora-reagendar"
                   type="time"
@@ -948,6 +994,7 @@ if (datosPago.formaPago === 'TRANSFERENCIA') {
                 >
                   Cancelar
                 </button>
+
                 <button
                   type="submit"
                   style={{

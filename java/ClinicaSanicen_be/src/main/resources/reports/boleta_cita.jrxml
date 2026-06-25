@@ -13,26 +13,22 @@
 
     <parameter name="LOGO_PATH" class="java.io.InputStream"/>
     <parameter name="NOMBRE_CLINICA" class="java.lang.String"/>
-    <parameter name="RUC" class="java.lang.String"/>
-    <parameter name="DIRECCION" class="java.lang.String"/>
-    <parameter name="TELEFONO" class="java.lang.String"/>
     <parameter name="FECHA_EMISION" class="java.lang.String"/>
+    <parameter name="NUMERO_CITA" class="java.lang.String"/>
 
-    <parameter name="NUMERO_BOLETA" class="java.lang.String"/>
     <parameter name="PACIENTE" class="java.lang.String"/>
+    <parameter name="DNI" class="java.lang.String"/>
     <parameter name="MEDICO" class="java.lang.String"/>
     <parameter name="ESPECIALIDAD" class="java.lang.String"/>
     <parameter name="FECHA_CITA" class="java.lang.String"/>
     <parameter name="HORA_CITA" class="java.lang.String"/>
     <parameter name="MOTIVO" class="java.lang.String"/>
-    <parameter name="FORMA_PAGO" class="java.lang.String"/>
-    <parameter name="MONTO" class="java.lang.String"/>
     <parameter name="ESTADO" class="java.lang.String"/>
 
     <title>
         <band height="760">
 
-            <!-- Franja superior -->
+            <!-- Línea superior roja -->
             <rectangle>
                 <reportElement x="0" y="0" width="515" height="10" backcolor="#E8505B" mode="Opaque"/>
                 <graphicElement>
@@ -40,110 +36,94 @@
                 </graphicElement>
             </rectangle>
 
-            <!-- Encabezado principal -->
+            <!-- Encabezado -->
             <rectangle>
-                <reportElement x="0" y="10" width="515" height="95" backcolor="#F8F9FA" mode="Opaque"/>
+                <reportElement x="0" y="10" width="515" height="105" backcolor="#F8F9FA" mode="Opaque"/>
                 <graphicElement>
                     <pen lineWidth="0.7" lineColor="#D9D9D9"/>
                 </graphicElement>
             </rectangle>
 
-            <image>
-                <reportElement x="15" y="28" width="75" height="45"/>
+            <image onErrorType="Blank">
+                <reportElement x="18" y="32" width="75" height="45"/>
                 <imageExpression><![CDATA[$P{LOGO_PATH}]]></imageExpression>
             </image>
 
             <textField>
-                <reportElement x="100" y="24" width="230" height="22"/>
+                <reportElement x="105" y="28" width="240" height="22"/>
                 <textElement>
-                    <font size="15" isBold="true"/>
+                    <font size="16" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{NOMBRE_CLINICA}]]></textFieldExpression>
             </textField>
 
+            <staticText>
+                <reportElement x="105" y="53" width="240" height="14"/>
+                <textElement>
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Documento de comprobante de cita médica]]></text>
+            </staticText>
+
             <textField>
-                <reportElement x="100" y="48" width="230" height="14"/>
+                <reportElement x="105" y="72" width="240" height="14"/>
                 <textElement>
                     <font size="8"/>
                 </textElement>
-                <textFieldExpression><![CDATA["RUC: " + $P{RUC}]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Fecha de emisión: " + $P{FECHA_EMISION}]]></textFieldExpression>
             </textField>
 
-            <textField>
-                <reportElement x="100" y="63" width="230" height="14"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$P{DIRECCION}]]></textFieldExpression>
-            </textField>
-
-            <textField>
-                <reportElement x="100" y="78" width="230" height="14"/>
-                <textElement>
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Teléfono: " + $P{TELEFONO}]]></textFieldExpression>
-            </textField>
-
-            <!-- Caja de boleta -->
+            <!-- Caja número cita -->
             <rectangle>
-                <reportElement x="355" y="25" width="140" height="60" backcolor="#FFFFFF" mode="Opaque"/>
+                <reportElement x="365" y="28" width="130" height="60" backcolor="#FFFFFF" mode="Opaque"/>
                 <graphicElement>
                     <pen lineWidth="1.1" lineColor="#333333"/>
                 </graphicElement>
             </rectangle>
 
             <staticText>
-                <reportElement x="355" y="33" width="140" height="18"/>
+                <reportElement x="365" y="38" width="130" height="18"/>
                 <textElement textAlignment="Center">
                     <font size="10" isBold="true"/>
                 </textElement>
-                <text><![CDATA[BOLETA DE PAGO]]></text>
+                <text><![CDATA[CITA MÉDICA]]></text>
             </staticText>
 
             <textField>
-                <reportElement x="355" y="56" width="140" height="18"/>
+                <reportElement x="365" y="62" width="130" height="18"/>
                 <textElement textAlignment="Center">
                     <font size="11" isBold="true"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$P{NUMERO_BOLETA}]]></textFieldExpression>
+                <textFieldExpression><![CDATA["CM-" + $P{NUMERO_CITA}]]></textFieldExpression>
             </textField>
 
             <!-- Título -->
             <staticText>
-                <reportElement x="0" y="130" width="515" height="28" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <reportElement x="0" y="145" width="515" height="28" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="13" isBold="true"/>
                 </textElement>
                 <text><![CDATA[COMPROBANTE DE CITA MÉDICA]]></text>
             </staticText>
 
-            <textField>
-                <reportElement x="335" y="170" width="180" height="16"/>
-                <textElement textAlignment="Right">
-                    <font size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Fecha de emisión: " + $P{FECHA_EMISION}]]></textFieldExpression>
-            </textField>
-
-            <!-- Sección paciente -->
+            <!-- Datos del paciente -->
             <rectangle>
-                <reportElement x="0" y="205" width="515" height="155" backcolor="#FFFFFF" mode="Opaque"/>
+                <reportElement x="0" y="205" width="515" height="125" backcolor="#FFFFFF" mode="Opaque"/>
                 <graphicElement>
                     <pen lineWidth="0.7" lineColor="#D9D9D9"/>
                 </graphicElement>
             </rectangle>
 
             <staticText>
-                <reportElement x="0" y="205" width="515" height="24" backcolor="#F1F1F1" mode="Opaque"/>
+                <reportElement x="0" y="205" width="515" height="25" backcolor="#F1F1F1" mode="Opaque"/>
                 <textElement verticalAlignment="Middle">
                     <font size="10" isBold="true"/>
                 </textElement>
-                <text><![CDATA[  DATOS DEL PACIENTE Y CITA]]></text>
+                <text><![CDATA[  DATOS DEL PACIENTE]]></text>
             </staticText>
 
             <staticText>
-                <reportElement x="25" y="245" width="115" height="16"/>
+                <reportElement x="25" y="255" width="120" height="16"/>
                 <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
@@ -151,7 +131,7 @@
             </staticText>
 
             <textField>
-                <reportElement x="150" y="245" width="330" height="16"/>
+                <reportElement x="155" y="255" width="330" height="16"/>
                 <textElement>
                     <font size="9"/>
                 </textElement>
@@ -159,7 +139,39 @@
             </textField>
 
             <staticText>
-                <reportElement x="25" y="272" width="115" height="16"/>
+                <reportElement x="25" y="282" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[DNI:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="282" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{DNI}]]></textFieldExpression>
+            </textField>
+
+            <!-- Datos atención -->
+            <rectangle>
+                <reportElement x="0" y="360" width="515" height="200" backcolor="#FFFFFF" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="0" y="360" width="515" height="25" backcolor="#F1F1F1" mode="Opaque"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  DATOS DE LA ATENCIÓN]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="25" y="405" width="120" height="16"/>
                 <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
@@ -167,7 +179,7 @@
             </staticText>
 
             <textField>
-                <reportElement x="150" y="272" width="330" height="16"/>
+                <reportElement x="155" y="405" width="330" height="16"/>
                 <textElement>
                     <font size="9"/>
                 </textElement>
@@ -175,7 +187,7 @@
             </textField>
 
             <staticText>
-                <reportElement x="25" y="299" width="115" height="16"/>
+                <reportElement x="25" y="432" width="120" height="16"/>
                 <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
@@ -183,7 +195,7 @@
             </staticText>
 
             <textField>
-                <reportElement x="150" y="299" width="330" height="16"/>
+                <reportElement x="155" y="432" width="330" height="16"/>
                 <textElement>
                     <font size="9"/>
                 </textElement>
@@ -191,176 +203,100 @@
             </textField>
 
             <staticText>
-                <reportElement x="25" y="326" width="115" height="16"/>
+                <reportElement x="25" y="459" width="120" height="16"/>
                 <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
-                <text><![CDATA[Fecha y hora:]]></text>
+                <text><![CDATA[Fecha:]]></text>
             </staticText>
 
             <textField>
-                <reportElement x="150" y="326" width="330" height="16"/>
+                <reportElement x="155" y="459" width="330" height="16"/>
                 <textElement>
                     <font size="9"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$P{FECHA_CITA} + " - " + $P{HORA_CITA}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$P{FECHA_CITA}]]></textFieldExpression>
             </textField>
 
-            <!-- Motivo -->
-            <rectangle>
-                <reportElement x="0" y="380" width="515" height="70" backcolor="#FFFFFF" mode="Opaque"/>
-                <graphicElement>
-                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
-                </graphicElement>
-            </rectangle>
-
             <staticText>
-                <reportElement x="0" y="380" width="515" height="22" backcolor="#F1F1F1" mode="Opaque"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
+                <reportElement x="25" y="486" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
                 </textElement>
-                <text><![CDATA[  MOTIVO DE LA CITA]]></text>
+                <text><![CDATA[Hora:]]></text>
             </staticText>
 
             <textField>
-                <reportElement x="25" y="415" width="465" height="25"/>
+                <reportElement x="155" y="486" width="330" height="16"/>
+                <textElement>
+                    <font size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{HORA_CITA}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="25" y="513" width="120" height="16"/>
+                <textElement>
+                    <font size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Motivo:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="155" y="513" width="330" height="18"/>
                 <textElement>
                     <font size="9"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{MOTIVO}]]></textFieldExpression>
             </textField>
 
-            <!-- Detalle pago -->
             <staticText>
-                <reportElement x="0" y="475" width="515" height="24" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="10" isBold="true"/>
-                </textElement>
-                <text><![CDATA[  DETALLE DEL PAGO]]></text>
-            </staticText>
-
-            <rectangle>
-                <reportElement x="0" y="499" width="515" height="95" backcolor="#FFFFFF" mode="Opaque"/>
-                <graphicElement>
-                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
-                </graphicElement>
-            </rectangle>
-
-            <staticText>
-                <reportElement x="20" y="515" width="250" height="18"/>
-                <textElement>
-                    <font size="9" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Concepto]]></text>
-            </staticText>
-
-            <staticText>
-                <reportElement x="360" y="515" width="110" height="18"/>
-                <textElement textAlignment="Right">
-                    <font size="9" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Importe]]></text>
-            </staticText>
-
-            <line>
-                <reportElement x="0" y="540" width="515" height="1"/>
-            </line>
-
-            <staticText>
-                <reportElement x="20" y="555" width="250" height="18"/>
-                <textElement>
-                    <font size="9"/>
-                </textElement>
-                <text><![CDATA[Pago por cita médica]]></text>
-            </staticText>
-
-            <textField>
-                <reportElement x="360" y="555" width="110" height="18"/>
-                <textElement textAlignment="Right">
-                    <font size="9"/>
-                </textElement>
-                <textFieldExpression><![CDATA["S/ " + $P{MONTO}]]></textFieldExpression>
-            </textField>
-
-            <!-- Forma de pago y estado -->
-            <staticText>
-                <reportElement x="0" y="615" width="115" height="18"/>
-                <textElement>
-                    <font size="9" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Forma de pago:]]></text>
-            </staticText>
-
-            <textField>
-                <reportElement x="120" y="615" width="210" height="18"/>
-                <textElement>
-                    <font size="9"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$P{FORMA_PAGO}]]></textFieldExpression>
-            </textField>
-
-            <staticText>
-                <reportElement x="0" y="650" width="70" height="18"/>
+                <reportElement x="25" y="540" width="120" height="16"/>
                 <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Estado:]]></text>
             </staticText>
 
-            <rectangle>
-                <reportElement x="70" y="645" width="95" height="26" backcolor="#E8F5E9" mode="Opaque"/>
-                <graphicElement>
-                    <pen lineWidth="0.7" lineColor="#2E7D32"/>
-                </graphicElement>
-            </rectangle>
-
             <textField>
-                <reportElement x="70" y="651" width="95" height="16" forecolor="#2E7D32"/>
-                <textElement textAlignment="Center">
+                <reportElement x="155" y="540" width="130" height="18" forecolor="#2E7D32"/>
+                <textElement>
                     <font size="9" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$P{ESTADO}]]></textFieldExpression>
             </textField>
 
-            <!-- Total -->
+            <!-- Indicaciones -->
+            <staticText>
+                <reportElement x="0" y="595" width="515" height="24" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[  INDICACIONES]]></text>
+            </staticText>
+
             <rectangle>
-                <reportElement x="330" y="625" width="165" height="50" backcolor="#F8F9FA" mode="Opaque"/>
+                <reportElement x="0" y="619" width="515" height="70" backcolor="#FFFFFF" mode="Opaque"/>
                 <graphicElement>
-                    <pen lineWidth="1.0" lineColor="#333333"/>
+                    <pen lineWidth="0.7" lineColor="#D9D9D9"/>
                 </graphicElement>
             </rectangle>
 
             <staticText>
-                <reportElement x="345" y="642" width="55" height="18"/>
+                <reportElement x="25" y="642" width="465" height="28"/>
                 <textElement>
-                    <font size="12" isBold="true"/>
+                    <font size="9"/>
                 </textElement>
-                <text><![CDATA[TOTAL:]]></text>
+                <text><![CDATA[Presentar este comprobante al momento de asistir a la consulta médica. Llegar con 10 minutos de anticipación.]]></text>
             </staticText>
-
-            <textField>
-                <reportElement x="400" y="642" width="80" height="18"/>
-                <textElement textAlignment="Right">
-                    <font size="12" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["S/ " + $P{MONTO}]]></textFieldExpression>
-            </textField>
 
             <!-- Pie -->
             <line>
-                <reportElement x="0" y="700" width="515" height="1"/>
+                <reportElement x="0" y="720" width="515" height="1"/>
             </line>
 
             <staticText>
-                <reportElement x="0" y="712" width="515" height="14"/>
-                <textElement textAlignment="Center">
-                    <font size="8"/>
-                </textElement>
-                <text><![CDATA[Gracias por confiar en Clínica Sanicen.]]></text>
-            </staticText>
-
-            <staticText>
-                <reportElement x="0" y="728" width="515" height="14"/>
+                <reportElement x="0" y="735" width="515" height="12"/>
                 <textElement textAlignment="Center">
                     <font size="7"/>
                 </textElement>
