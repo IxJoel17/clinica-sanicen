@@ -7,3 +7,5 @@ target/
 .idea/
 *.iml
 *.log
+# Excluye el archivo de propiedades que contiene credenciales de BD
+src/main/resources/application.properties

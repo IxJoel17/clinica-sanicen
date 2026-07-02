@@ -6,7 +6,6 @@ import com.utp.clinicasanicen_be.entity.Paciente;
 import com.utp.clinicasanicen_be.repository.MedicoRepository;
 import com.utp.clinicasanicen_be.repository.PacienteRepository;
 import com.utp.clinicasanicen_be.service.CitaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +21,15 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class CitaController {
 
-    @Autowired
-    private CitaService citaService;
+    private final CitaService citaService;
+    private final PacienteRepository pacienteRepository;
+    private final MedicoRepository medicoRepository;
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
-
-    @Autowired
-    private MedicoRepository medicoRepository;
+    public CitaController(CitaService citaService, PacienteRepository pacienteRepository, MedicoRepository medicoRepository) {
+        this.citaService = citaService;
+        this.pacienteRepository = pacienteRepository;
+        this.medicoRepository = medicoRepository;
+    }
 
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllCitas() {
