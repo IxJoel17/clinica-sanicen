@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS detalle_receta CASCADE;
 DROP TABLE IF EXISTS receta CASCADE;
 DROP TABLE IF EXISTS historial_medico CASCADE;
 DROP TABLE IF EXISTS cita CASCADE;
+DROP TABLE IF EXISTS referencia CASCADE;
 DROP TABLE IF EXISTS paciente CASCADE;
 DROP TABLE IF EXISTS medico CASCADE;
 DROP TABLE IF EXISTS especialidades CASCADE;
@@ -98,6 +99,26 @@ CREATE TABLE cita (
 
 CREATE INDEX IF NOT EXISTS IX_cita_paciente ON cita(id_paciente);
 CREATE INDEX IF NOT EXISTS IX_cita_medico ON cita(id_medico);
+
+-- TABLA: referencia
+CREATE TABLE referencia (
+    id_referencia SERIAL PRIMARY KEY,
+    fecha DATE NOT NULL,
+    motivo VARCHAR(200),
+    id_paciente INTEGER NOT NULL,
+    id_medico INTEGER NOT NULL,
+    especialidad_destino VARCHAR(200),
+    CONSTRAINT FK_referencia_paciente FOREIGN KEY (id_paciente)
+        REFERENCES paciente(id_paciente)
+        ON DELETE CASCADE,
+    CONSTRAINT FK_referencia_medico FOREIGN KEY (id_medico)
+        REFERENCES medico(id_medico)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS IX_referencia_paciente ON referencia(id_paciente);
+CREATE INDEX IF NOT EXISTS IX_referencia_medico ON referencia(id_medico);
+
 
 -- TABLA: historial_medico
 CREATE TABLE historial_medico (
