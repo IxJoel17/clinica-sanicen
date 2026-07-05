@@ -19,6 +19,9 @@ public class Paciente {
     
     @Column(name = "apellido", length = 100)
     private String apellido;
+
+    @Column(name = "dni", length = 8)
+    private String dni;
     
     @Column(name = "sexo", length = 2)
     private String sexo;
@@ -54,8 +57,8 @@ public class Paciente {
     @JsonIgnore
     private List<BoletaPago> boletasPago;
     
-    public Paciente() {}
-    
+    public Paciente() {
+    }
     
     public Integer getIdPaciente() {
         return idPaciente;
@@ -79,6 +82,14 @@ public class Paciente {
     
     public void setApellido(String apellido) {
         this.apellido = apellido;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
     
     public String getSexo() {
@@ -161,4 +172,3 @@ public class Paciente {
         this.boletasPago = boletasPago;
     }
 }
-

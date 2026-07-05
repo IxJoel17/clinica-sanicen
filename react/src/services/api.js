@@ -1,14 +1,13 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { Capacitor } from '@capacitor/core'
 
 const API_BASE_URL = Capacitor.isNativePlatform()
   ? 'http://192.168.1.25:8080/api'
   : 'http://localhost:8080/api'
 
-
 async function fetchAPI(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`
-  
+
   const defaultOptions = {
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +16,7 @@ async function fetchAPI(endpoint, options = {}) {
 
   const token = localStorage.getItem('authToken')
   if (token) {
-    defaultOptions.headers['Authorization'] = `Bearer ${token}`
+    defaultOptions.headers.Authorization = `Bearer ${token}`
   }
 
   const config = {
@@ -31,285 +30,239 @@ async function fetchAPI(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config)
-    
+
     if (response.status === 401 || response.status === 403) {
       localStorage.removeItem('authToken')
       localStorage.removeItem('user')
+
       if (window.location.pathname !== '/login') {
         window.location.href = '/login'
       }
-      throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.')
+
+      throw new Error('Sesión expirada. Inicia sesión nuevamente.')
     }
-    
-    const data = await response.json()
+
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : null
 
     if (!response.ok) {
-      const errorMessage = data.message || data.error || `Error: ${response.statusText}`
-      throw new Error(errorMessage)
+      throw new Error(data?.message || data?.error || `Error ${response.status}`)
     }
 
     return data
   } catch (error) {
-    console.error('Error en API:', error)
+    console.error('API Error:', error)
     throw error
   }
 }
 
 export const authAPI = {
-  login: async (usuario, contrasena) => {
-    return await fetchAPI('/auth/login', {
+  login: (usuario, contrasena) =>
+    fetchAPI('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ usuario, contrasena }),
-    })
-  },
+    }),
 
-  register: async (userData) => {
-    return await fetchAPI('/auth/register', {
+  register: (data) =>
+    fetchAPI('/auth/register', {
       method: 'POST',
-      body: JSON.stringify(userData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 }
 
 export const especialidadesAPI = {
-  getAll: async () => {
-    return await fetchAPI('/especialidades')
-  },
+  getAll: () => fetchAPI('/especialidades'),
+  getById: (id) => fetchAPI(`/especialidades/${id}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/especialidades/${id}`)
-  },
-
-  create: async (especialidadData) => {
-    return await fetchAPI('/especialidades', {
+  create: (data) =>
+    fetchAPI('/especialidades', {
       method: 'POST',
-      body: JSON.stringify(especialidadData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, especialidadData) => {
-    return await fetchAPI(`/especialidades/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/especialidades/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(especialidadData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  delete: async (id) => {
-    return await fetchAPI(`/especialidades/${id}`, {
+  delete: (id) =>
+    fetchAPI(`/especialidades/${id}`, {
       method: 'DELETE',
-    })
-  },
+    }),
 }
 
 export const medicosAPI = {
-  getAll: async () => {
-    return await fetchAPI('/medicos')
-  },
+  getAll: () => fetchAPI('/medicos'),
+  getById: (id) => fetchAPI(`/medicos/${id}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/medicos/${id}`)
-  },
+  getByCorreo: (correo) =>
+    fetchAPI(`/medicos/correo/${encodeURIComponent(correo)}`),
 
-  getByCorreo: async (correo) => {
-    return await fetchAPI(`/medicos/correo/${encodeURIComponent(correo)}`)
-  },
+  getByEspecialidad: (idEspecialidad) =>
+    fetchAPI(`/medicos/especialidad/${idEspecialidad}`),
 
-  getByEspecialidad: async (idEspecialidad) => {
-    return await fetchAPI(`/medicos/especialidad/${idEspecialidad}`)
-  },
+  getAllIncludingInactive: () => fetchAPI('/medicos/all'),
 
-  getAllIncludingInactive: async () => {
-    return await fetchAPI('/medicos/all')
-  },
-
-  create: async (medicoData) => {
-    return await fetchAPI('/medicos', {
+  create: (data) =>
+    fetchAPI('/medicos', {
       method: 'POST',
-      body: JSON.stringify(medicoData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, medicoData) => {
-    return await fetchAPI(`/medicos/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/medicos/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(medicoData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  delete: async (id) => {
-    return await fetchAPI(`/medicos/${id}`, {
+  delete: (id) =>
+    fetchAPI(`/medicos/${id}`, {
       method: 'DELETE',
-    })
-  },
+    }),
 }
 
 export const pacientesAPI = {
-  getAll: async () => {
-    return await fetchAPI('/pacientes')
-  },
+  getAll: () => fetchAPI('/pacientes'),
+  getById: (id) => fetchAPI(`/pacientes/${id}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/pacientes/${id}`)
-  },
+  getByCorreo: (correo) =>
+    fetchAPI(`/pacientes/correo/${encodeURIComponent(correo)}`),
 
-  getByCorreo: async (correo) => {
-    return await fetchAPI(`/pacientes/correo/${encodeURIComponent(correo)}`)
-  },
-
-  create: async (pacienteData) => {
-    return await fetchAPI('/pacientes', {
+  create: (data) =>
+    fetchAPI('/pacientes', {
       method: 'POST',
-      body: JSON.stringify(pacienteData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, pacienteData) => {
-    return await fetchAPI(`/pacientes/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/pacientes/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(pacienteData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  delete: async (id) => {
-    return await fetchAPI(`/pacientes/${id}`, {
+  delete: (id) =>
+    fetchAPI(`/pacientes/${id}`, {
       method: 'DELETE',
-    })
-  },
+    }),
 }
 
 export const citasAPI = {
-  getAll: async () => {
-    return await fetchAPI('/citas')
-  },
+  getAll: () => fetchAPI('/citas'),
+  getById: (id) => fetchAPI(`/citas/${id}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/citas/${id}`)
-  },
+  getByPaciente: (idPaciente) =>
+    fetchAPI(`/citas/paciente/${idPaciente}`),
 
-  getByPaciente: async (idPaciente) => {
-    return await fetchAPI(`/citas/paciente/${idPaciente}`)
-  },
+  getByMedico: (idMedico) =>
+    fetchAPI(`/citas/medico/${idMedico}`),
 
-  getByMedico: async (idMedico) => {
-    return await fetchAPI(`/citas/medico/${idMedico}`)
-  },
-
-  create: async (citaData) => {
-    return await fetchAPI('/citas', {
+  create: (data) =>
+    fetchAPI('/citas', {
       method: 'POST',
-      body: JSON.stringify(citaData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, citaData) => {
-    return await fetchAPI(`/citas/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/citas/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(citaData),
-    })
-  },
-    
-  delete: async (id) => {
-    return await fetchAPI(`/citas/${id}`, {
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id) =>
+    fetchAPI(`/citas/${id}`, {
       method: 'DELETE',
-    })
-  },
+    }),
 }
 
 export const historialAPI = {
-  getByPaciente: async (idPaciente) => {
-    return await fetchAPI(`/historial/paciente/${idPaciente}`)
-  },
+  getByPaciente: (idPaciente) =>
+    fetchAPI(`/historial/paciente/${idPaciente}`),
 
-  getAllByPaciente: async (idPaciente) => {
-    return await fetchAPI(`/historial/paciente/${idPaciente}/all`)
-  },
+  getAllByPaciente: (idPaciente) =>
+    fetchAPI(`/historial/paciente/${idPaciente}/all`),
 
-  create: async (historialData) => {
-    return await fetchAPI('/historial', {
+  getById: (id) =>
+    fetchAPI(`/historial/${id}`),
+
+  create: (data) =>
+    fetchAPI('/historial', {
       method: 'POST',
-      body: JSON.stringify(historialData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, historialData) => {
-    return await fetchAPI(`/historial/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/historial/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(historialData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 }
 
 export const recetasAPI = {
-  getByPaciente: async (idPaciente) => {
-    const response = await api.get(`/recetas/paciente/${idPaciente}`)
-    return response.data
-  },
+  getByPaciente: (idPaciente) =>
+    fetchAPI(`/recetas/paciente/${idPaciente}`),
 
-  getById: async (id) => {
-    const response = await api.get(`/recetas/${id}`)
-    return response.data
-  },
+  getById: (id) =>
+    fetchAPI(`/recetas/${id}`),
 
-  create: async (data) => {
-    const response = await api.post('/recetas', data)
-    return response.data
-  },
+  create: (data) =>
+    fetchAPI('/recetas', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
-  update: async (idReceta, data) => {
-    const response = await api.put(`/recetas/${idReceta}`, data)
-    return response.data
-  },
+  update: (id, data) =>
+    fetchAPI(`/recetas/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
 }
 
 export const boletasAPI = {
-  getByPaciente: async (idPaciente) => {
-    return await fetchAPI(`/boletas/paciente/${idPaciente}`)
-  },
+  getByPaciente: (idPaciente) =>
+    fetchAPI(`/boletas/paciente/${idPaciente}`),
 
-  getByCita: async (idCita) => {
-    return await fetchAPI(`/boletas/cita/${idCita}`)
-  },
+  getByCita: (idCita) =>
+    fetchAPI(`/boletas/cita/${idCita}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/boletas/${id}`)
-  },
+  getById: (id) =>
+    fetchAPI(`/boletas/${id}`),
 
-  create: async (boletaData) => {
-    return await fetchAPI('/boletas', {
+  create: (data) =>
+    fetchAPI('/boletas', {
       method: 'POST',
-      body: JSON.stringify(boletaData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 }
 
 export const usuariosAPI = {
-  getAll: async () => {
-    return await fetchAPI('/usuarios')
-  },
+  getAll: () => fetchAPI('/usuarios'),
+  getById: (id) => fetchAPI(`/usuarios/${id}`),
 
-  getById: async (id) => {
-    return await fetchAPI(`/usuarios/${id}`)
-  },
-
-  create: async (usuarioData) => {
-    return await fetchAPI('/usuarios', {
+  create: (data) =>
+    fetchAPI('/usuarios', {
       method: 'POST',
-      body: JSON.stringify(usuarioData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  update: async (id, usuarioData) => {
-    return await fetchAPI(`/usuarios/${id}`, {
+  update: (id, data) =>
+    fetchAPI(`/usuarios/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(usuarioData),
-    })
-  },
+      body: JSON.stringify(data),
+    }),
 
-  delete: async (id) => {
-    return await fetchAPI(`/usuarios/${id}`, {
+  delete: (id) =>
+    fetchAPI(`/usuarios/${id}`, {
       method: 'DELETE',
-    })
-  },
+    }),
+}
+
+export const consultaCuentaAPI = {
+  buscar: (codigo) =>
+    fetchAPI(`/consulta-cuenta/${encodeURIComponent(codigo)}`),
+
+  busqueda: (texto) =>
+    fetchAPI(`/consulta-cuenta/busqueda?texto=${encodeURIComponent(texto)}`),
 }
 
 export default {
@@ -322,5 +275,5 @@ export default {
   recetas: recetasAPI,
   boletas: boletasAPI,
   usuarios: usuariosAPI,
-}
-
+  consultaCuenta: consultaCuentaAPI,
+} 

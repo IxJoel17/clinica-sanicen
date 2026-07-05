@@ -35,6 +35,7 @@ import PacientesAdmin from './pages/admin/PacientesAdmin'
 import UsuariosAdmin from './pages/admin/UsuariosAdmin'
 import CitasAdmin from './pages/admin/CitasAdmin'
 import ServiciosAdmin from './pages/admin/ServiciosAdmin'
+import ConsultaCuenta from './pages/admin/ConsultaCuenta/ConsultaCuenta'
 
 function App() {
   return (
@@ -204,14 +205,15 @@ function App() {
               <ServiciosAdmin />
             </ProtectedRouteByRole>
           }
-        />
-        <Route
-          path="/recepcionista/medicos"
+          />
+
+          <Route
+          path="/consulta-cuenta"
           element={
-            <ProtectedRouteByRole allowedRoles="recepcionista">
-              <MedicosAdmin />
+            <ProtectedRouteByRole allowedRoles="administrador">
+              <ConsultaCuenta />
             </ProtectedRouteByRole>
-          }
+      }
         />
         
         {/* Rutas de recepcionista */}
