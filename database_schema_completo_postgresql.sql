@@ -1,7 +1,7 @@
 	-- ============================================================
 	-- BASE DE DATOS FINAL - CLINICA SANICEN
-	-- 31 especialidades, 34 medicos, 86 pacientes, 222 citas completadas y 80 pendientes/programadas
-	-- Cada paciente tiene 2 o 3 citas completadas.
+	-- 31 especialidades, 62 medicos, 130 pacientes, 325 citas completadas y 186 futuras (pendientes/programadas/confirmadas)
+	-- Cada paciente tiene 2 o 3 citas completadas y todos los médicos tienen citas.
 	-- Contraseña general: 123456
 	-- ============================================================
 	
@@ -159,14 +159,70 @@
 	('Carolina','Vargas','Av. Principal 105','987650005','carolina.vargas@sanicen.com','administrador');
 	
 	INSERT INTO usuario (nombre, apellido, direccion, telefono, correo, rol)
-	SELECT nombre, apellido, 'Consultorio ' || (200 + rn), '987651' || LPAD(rn::TEXT,3,'0'), lower(nombre || '.' || apellido || '@sanicen.com'), 'medico'
-	FROM (VALUES
-	(1,'Roberto','Vargas'),(2,'Laura','Ramirez'),(3,'Pedro','Mendoza'),(4,'Carmen','Silva'),(5,'Miguel','Torres'),(6,'Patricia','Castro'),
-	(7,'Jose','Fernandez'),(8,'Daniela','Paredes'),(9,'Fernando','Quispe'),(10,'Valeria','Navarro'),(11,'Rosa','Huaman'),(12,'Sergio','Salazar'),
-	(13,'Mariana','Flores'),(14,'Andres','Cordova'),(15,'Luciana','Reyes'),(16,'Hugo','Alvarez'),(17,'Natalia','Rojas'),(18,'Esteban','Morales'),
-	(19,'Camila','Salas'),(20,'Victor','Peña'),(21,'Adriana','Mamani'),(22,'Ricardo','Sanchez'),(23,'Gabriel','Lozano'),(24,'Daniel','Castillo'),
-	(25,'Silvia','Campos'),(26,'Mario','Huerta'),(27,'Diana','Carrillo'),(28,'Mauricio','Vega'),(29,'Elisa','Paredes'),(30,'Julio','Ibarra'),
-	(31,'Renata','Cruz'),(32,'Felipe','Noriega'),(33,'Monica','Caceres'),(34,'Alvaro','Renteria')) AS med(rn,nombre,apellido);
+SELECT nombre, apellido, 'Consultorio ' || (200 + rn), '987651' || LPAD(rn::TEXT,3,'0'), lower(nombre || '.' || apellido || '@sanicen.com'), 'medico'
+FROM (VALUES
+	(1,'Roberto','Vargas'),
+	(2,'Laura','Ramirez'),
+	(3,'Pedro','Mendoza'),
+	(4,'Carmen','Silva'),
+	(5,'Miguel','Torres'),
+	(6,'Patricia','Castro'),
+	(7,'Jose','Fernandez'),
+	(8,'Daniela','Paredes'),
+	(9,'Fernando','Quispe'),
+	(10,'Valeria','Navarro'),
+	(11,'Rosa','Huaman'),
+	(12,'Sergio','Salazar'),
+	(13,'Mariana','Flores'),
+	(14,'Andres','Cordova'),
+	(15,'Luciana','Reyes'),
+	(16,'Hugo','Alvarez'),
+	(17,'Natalia','Rojas'),
+	(18,'Esteban','Morales'),
+	(19,'Camila','Salas'),
+	(20,'Victor','Peña'),
+	(21,'Adriana','Mamani'),
+	(22,'Ricardo','Sanchez'),
+	(23,'Gabriel','Lozano'),
+	(24,'Daniel','Castillo'),
+	(25,'Silvia','Campos'),
+	(26,'Mario','Huerta'),
+	(27,'Diana','Carrillo'),
+	(28,'Mauricio','Vega'),
+	(29,'Elisa','Paredes'),
+	(30,'Julio','Ibarra'),
+	(31,'Renata','Cruz'),
+	(32,'Felipe','Noriega'),
+	(33,'Monica','Caceres'),
+	(34,'Alvaro','Renteria'),
+	(35,'Paola','Herrera'),
+	(36,'Diego','Medina'),
+	(37,'Fiorella','Aguilar'),
+	(38,'Javier','Romero'),
+	(39,'Karla','Espinoza'),
+	(40,'Bruno','Acosta'),
+	(41,'Milagros','Chavez'),
+	(42,'Gustavo','Cabrera'),
+	(43,'Claudia','Ortega'),
+	(44,'Sebastian','Valverde'),
+	(45,'Andrea','Palacios'),
+	(46,'Mateo','Soto'),
+	(47,'Jimena','Leon'),
+	(48,'Emilio','Ponce'),
+	(49,'Sofia','Tello'),
+	(50,'Rodrigo','Arias'),
+	(51,'Valentina','Rivas'),
+	(52,'Alejandro','Meza'),
+	(53,'Daniela','Pinto'),
+	(54,'Ximena','Aguirre'),
+	(55,'Renzo','Molina'),
+	(56,'Camilo','Herrera'),
+	(57,'Isabella','Garcia'),
+	(58,'Thiago','Vasquez'),
+	(59,'Antonella','Cortez'),
+	(60,'Benjamin','Espino'),
+	(61,'Ariana','Vera'),
+	(62,'Nicolas','Zamora')) AS med(rn,nombre,apellido);
 	
 	INSERT INTO usuario (nombre, apellido, direccion, telefono, correo, rol) VALUES
 	('Zully Tatiana','Tello Ramos','Recepcion 1','987652001','zully.tello@sanicen.com','recepcionista'),
@@ -261,7 +317,51 @@ FROM (VALUES
 (83,'Leslie','Pacheco'),
 (84,'Oscar','Nunez'),
 (85,'Nayeli','Saavedra'),
-(86,'Marco','Carranza')
+(86,'Marco','Carranza'),
+(87,'Rocio','Alarcon'),
+(88,'Franco','Bautista'),
+(89,'Kiara','Montes'),
+(90,'Aaron','Reategui'),
+(91,'Priscila','Zuniga'),
+(92,'Alan','Calderon'),
+(93,'Nicole','Valdivia'),
+(94,'Ivan','Moya'),
+(95,'Carla','Arias'),
+(96,'Joel','Luna'),
+(97,'Tamara','Escobar'),
+(98,'Martin','Cueva'),
+(99,'Miriam','Suarez'),
+(100,'Dante','Villar'),
+(101,'Yasmin','Ponce'),
+(102,'Cristian','Vasquez'),
+(103,'Brenda','Ticona'),
+(104,'Erick','Pizarro'),
+(105,'Lourdes','Arce'),
+(106,'Rafael','Cisneros'),
+(107,'Katherine','Lima'),
+(108,'Hector','Delgado'),
+(109,'Melissa','Rios'),
+(110,'Jhon','Mamani'),
+(111,'Grecia','Palacios'),
+(112,'Emanuel','Aguilar'),
+(113,'Dayana','Rojas'),
+(114,'Santiago','Torres'),
+(115,'Cielo','Salinas'),
+(116,'Adrian','Fuentes'),
+(117,'Luana','Cordova'),
+(118,'Gael','Navarro'),
+(119,'Marisol','Reyes'),
+(120,'Tomas','Huaman'),
+(121,'Estrella','Campos'),
+(122,'Cesar','Ortega'),
+(123,'Anahi','Bravo'),
+(124,'Iker','Santos'),
+(125,'Marlene','Cruz'),
+(126,'Axel','Carrillo'),
+(127,'Samanta','Espinoza'),
+(128,'Ruben','Vega'),
+(129,'Naomi','Carrasco'),
+(130,'Dylan','Herrera')
 ) AS datos(id, nombre, apellido);
 	
 	INSERT INTO logeo (id_usuario, usuario, contrasena, estado) VALUES
@@ -286,11 +386,16 @@ FROM (VALUES
 	FROM usuario WHERE rol='recepcionista';
 	
 	INSERT INTO medico (nombre, apellido, dni, telefono, correo, direccion, id_especialidad, activo)
-	SELECT u.nombre, u.apellido, LPAD((70000000 + ROW_NUMBER() OVER (ORDER BY u.id_usuario))::TEXT,8,'0'), u.telefono, u.correo, u.direccion,
-	CASE WHEN ROW_NUMBER() OVER (ORDER BY u.id_usuario) <= 31 THEN ROW_NUMBER() OVER (ORDER BY u.id_usuario)
-	     WHEN ROW_NUMBER() OVER (ORDER BY u.id_usuario)=32 THEN 1
-	     WHEN ROW_NUMBER() OVER (ORDER BY u.id_usuario)=33 THEN 8 ELSE 23 END, TRUE
-	FROM usuario u WHERE u.rol='medico';
+SELECT u.nombre, u.apellido,
+       LPAD((70000000 + ROW_NUMBER() OVER (ORDER BY u.id_usuario))::TEXT,8,'0'),
+       u.telefono, u.correo, u.direccion,
+       CASE 
+         WHEN ROW_NUMBER() OVER (ORDER BY u.id_usuario) <= 31 
+           THEN ROW_NUMBER() OVER (ORDER BY u.id_usuario)
+         ELSE ((ROW_NUMBER() OVER (ORDER BY u.id_usuario) - 32) % 31) + 1
+       END,
+       TRUE
+FROM usuario u WHERE u.rol='medico';
 	
 	INSERT INTO paciente (nombre, apellido, dni, sexo, fecha_nacimiento, direccion, telefono, correo, nro_historia)
 SELECT datos.nombre, datos.apellido, LPAD((72840000 + datos.id)::TEXT,8,'0'), CASE WHEN datos.id%2=0 THEN 'F' ELSE 'M' END,
@@ -381,27 +486,103 @@ FROM (VALUES
 (83,'Leslie','Pacheco'),
 (84,'Oscar','Nunez'),
 (85,'Nayeli','Saavedra'),
-(86,'Marco','Carranza')
+(86,'Marco','Carranza'),
+(87,'Rocio','Alarcon'),
+(88,'Franco','Bautista'),
+(89,'Kiara','Montes'),
+(90,'Aaron','Reategui'),
+(91,'Priscila','Zuniga'),
+(92,'Alan','Calderon'),
+(93,'Nicole','Valdivia'),
+(94,'Ivan','Moya'),
+(95,'Carla','Arias'),
+(96,'Joel','Luna'),
+(97,'Tamara','Escobar'),
+(98,'Martin','Cueva'),
+(99,'Miriam','Suarez'),
+(100,'Dante','Villar'),
+(101,'Yasmin','Ponce'),
+(102,'Cristian','Vasquez'),
+(103,'Brenda','Ticona'),
+(104,'Erick','Pizarro'),
+(105,'Lourdes','Arce'),
+(106,'Rafael','Cisneros'),
+(107,'Katherine','Lima'),
+(108,'Hector','Delgado'),
+(109,'Melissa','Rios'),
+(110,'Jhon','Mamani'),
+(111,'Grecia','Palacios'),
+(112,'Emanuel','Aguilar'),
+(113,'Dayana','Rojas'),
+(114,'Santiago','Torres'),
+(115,'Cielo','Salinas'),
+(116,'Adrian','Fuentes'),
+(117,'Luana','Cordova'),
+(118,'Gael','Navarro'),
+(119,'Marisol','Reyes'),
+(120,'Tomas','Huaman'),
+(121,'Estrella','Campos'),
+(122,'Cesar','Ortega'),
+(123,'Anahi','Bravo'),
+(124,'Iker','Santos'),
+(125,'Marlene','Cruz'),
+(126,'Axel','Carrillo'),
+(127,'Samanta','Espinoza'),
+(128,'Ruben','Vega'),
+(129,'Naomi','Carrasco'),
+(130,'Dylan','Herrera')
 ) AS datos(id, nombre, apellido);
 	
 	INSERT INTO logeo (id_usuario, usuario, contrasena, estado)
 	SELECT u.id_usuario, p.dni, '$2a$10$hnc8l5nHOGIcVux7CT00T.Ws2vDHUZE0HuEdllj3fpCWNf4.qlTSq', TRUE
 	FROM usuario u JOIN paciente p ON u.correo = p.correo WHERE u.rol='paciente';
 	
-	-- 222 citas completadas: cada paciente tiene 2 o 3 completadas
-	INSERT INTO cita (fecha, hora, estado, id_paciente, id_medico, motivo, created_at)
-	SELECT CURRENT_DATE - ((g % 90) * INTERVAL '1 day'), TIME '08:00' + ((g % 10) * INTERVAL '1 hour'), 'completada',
-	((g - 1) % 86) + 1, ((g - 1) % 34) + 1,
-	CASE (g % 10) WHEN 0 THEN 'Control médico general' WHEN 1 THEN 'Dolor dental' WHEN 2 THEN 'Consulta dermatológica' WHEN 3 THEN 'Evaluación nutricional'
-	WHEN 4 THEN 'Dolor lumbar' WHEN 5 THEN 'Control visual' WHEN 6 THEN 'Control psicológico' WHEN 7 THEN 'Consulta de fisioterapia' WHEN 8 THEN 'Chequeo preventivo' ELSE 'Seguimiento de tratamiento' END,
-	CURRENT_TIMESTAMP - ((g % 120) * INTERVAL '1 day')
-	FROM generate_series(1,222) g;
+	-- 325 citas completadas: cada paciente tiene 2 o 3 completadas y se distribuyen entre 62 médicos
+INSERT INTO cita (fecha, hora, estado, id_paciente, id_medico, motivo, created_at)
+SELECT CURRENT_DATE - ((g % 120) * INTERVAL '1 day'),
+       TIME '08:00' + ((g % 10) * INTERVAL '1 hour'),
+       'completada',
+       ((g - 1) % 130) + 1,
+       ((g - 1) % 62) + 1,
+       CASE (g % 10)
+         WHEN 0 THEN 'Control médico general'
+         WHEN 1 THEN 'Dolor dental'
+         WHEN 2 THEN 'Consulta dermatológica'
+         WHEN 3 THEN 'Evaluación nutricional'
+         WHEN 4 THEN 'Dolor lumbar'
+         WHEN 5 THEN 'Control visual'
+         WHEN 6 THEN 'Control psicológico'
+         WHEN 7 THEN 'Consulta de fisioterapia'
+         WHEN 8 THEN 'Chequeo preventivo'
+         ELSE 'Seguimiento de tratamiento'
+       END,
+       CURRENT_TIMESTAMP - ((g % 150) * INTERVAL '1 day')
+FROM generate_series(1,325) g;
 	
-	-- 80 citas pendientes/programadas
-	INSERT INTO cita (fecha, hora, estado, id_paciente, id_medico, motivo, created_at)
-	SELECT CURRENT_DATE + ((g % 35) * INTERVAL '1 day'), TIME '08:00' + ((g % 9) * INTERVAL '1 hour'), CASE WHEN g%2=0 THEN 'programada' ELSE 'pendiente' END,
-	((g - 1) % 86) + 1, ((g - 1) % 34) + 1, 'Consulta pendiente', CURRENT_TIMESTAMP - ((g % 10) * INTERVAL '1 day')
-	FROM generate_series(1,80) g;
+	-- 186 citas futuras: pendientes, programadas y confirmadas del 08 al 31 de julio de 2026
+-- Fechas distribuidas entre 2026-07-08 y 2026-07-31 para que salgan en el filtro por fecha.
+INSERT INTO cita (fecha, hora, estado, id_paciente, id_medico, motivo, created_at)
+SELECT DATE '2026-07-08' + (((g - 1) % 24) * INTERVAL '1 day'),
+       TIME '08:00' + ((g % 9) * INTERVAL '1 hour'),
+       CASE
+         WHEN g % 3 = 0 THEN 'confirmada'
+         WHEN g % 3 = 1 THEN 'pendiente'
+         ELSE 'programada'
+       END,
+       ((g - 1) % 130) + 1,
+       ((g - 1) % 62) + 1,
+       CASE (g % 8)
+         WHEN 0 THEN 'Control de seguimiento'
+         WHEN 1 THEN 'Consulta pendiente'
+         WHEN 2 THEN 'Chequeo preventivo'
+         WHEN 3 THEN 'Evaluación médica'
+         WHEN 4 THEN 'Control de tratamiento'
+         WHEN 5 THEN 'Consulta por dolor'
+         WHEN 6 THEN 'Revisión de resultados'
+         ELSE 'Atención programada'
+       END,
+       CURRENT_TIMESTAMP - ((g % 10) * INTERVAL '1 day')
+FROM generate_series(1,186) g;
 	
 	INSERT INTO historial_medico (id_paciente, id_medico, diagnostico, tratamiento, observaciones, fecha_registro)
 	SELECT c.id_paciente, c.id_medico,
@@ -446,6 +627,13 @@ FROM (VALUES
 	SELECT COUNT(*) AS total_boletas FROM boleta_pago;
 	SELECT COUNT(*) AS total_usuarios FROM usuario;
 	SELECT COUNT(*) AS total_logeo FROM logeo;
+
+SELECT e.id_especialidad, e.nombre, COUNT(m.id_medico) AS medicos_por_especialidad
+FROM especialidades e
+LEFT JOIN medico m ON e.id_especialidad = m.id_especialidad
+GROUP BY e.id_especialidad, e.nombre
+ORDER BY e.id_especialidad;
+
 	
 	
 	-- =========================================================
@@ -483,6 +671,8 @@ FROM (VALUES
 	-------------------------
 	MÉDICOS (ROL J)
 	-------------------------
+	MÉDICOS (ROL J)
+-------------------------
 	Usuario: J124578 | Clave: 123456 | Roberto Vargas
 	Usuario: J123456 | Clave: 123456 | Laura Ramirez
 	Usuario: J112233 | Clave: 123456 | Pedro Mendoza
@@ -498,6 +688,53 @@ FROM (VALUES
 	Usuario: J202607 | Clave: 123456 | Mariana Flores
 	Usuario: J202608 | Clave: 123456 | Andres Cordova
 	Usuario: J202609 | Clave: 123456 | Luciana Reyes
+	Usuario: J202610 | Clave: 123456 | Hugo Alvarez
+	Usuario: J202611 | Clave: 123456 | Natalia Rojas
+	Usuario: J202612 | Clave: 123456 | Esteban Morales
+	Usuario: J202613 | Clave: 123456 | Camila Salas
+	Usuario: J202614 | Clave: 123456 | Victor Peña
+	Usuario: J202615 | Clave: 123456 | Adriana Mamani
+	Usuario: J202616 | Clave: 123456 | Ricardo Sanchez
+	Usuario: J202617 | Clave: 123456 | Gabriel Lozano
+	Usuario: J202618 | Clave: 123456 | Daniel Castillo
+	Usuario: J202619 | Clave: 123456 | Silvia Campos
+	Usuario: J202620 | Clave: 123456 | Mario Huerta
+	Usuario: J202621 | Clave: 123456 | Diana Carrillo
+	Usuario: J202622 | Clave: 123456 | Mauricio Vega
+	Usuario: J202623 | Clave: 123456 | Elisa Paredes
+	Usuario: J202624 | Clave: 123456 | Julio Ibarra
+	Usuario: J202625 | Clave: 123456 | Renata Cruz
+	Usuario: J202626 | Clave: 123456 | Felipe Noriega
+	Usuario: J202627 | Clave: 123456 | Monica Caceres
+	Usuario: J202628 | Clave: 123456 | Alvaro Renteria
+	Usuario: J202629 | Clave: 123456 | Paola Herrera
+	Usuario: J202630 | Clave: 123456 | Diego Medina
+	Usuario: J202631 | Clave: 123456 | Fiorella Aguilar
+	Usuario: J202632 | Clave: 123456 | Javier Romero
+	Usuario: J202633 | Clave: 123456 | Karla Espinoza
+	Usuario: J202634 | Clave: 123456 | Bruno Acosta
+	Usuario: J202635 | Clave: 123456 | Milagros Chavez
+	Usuario: J202636 | Clave: 123456 | Gustavo Cabrera
+	Usuario: J202637 | Clave: 123456 | Claudia Ortega
+	Usuario: J202638 | Clave: 123456 | Sebastian Valverde
+	Usuario: J202639 | Clave: 123456 | Andrea Palacios
+	Usuario: J202640 | Clave: 123456 | Mateo Soto
+	Usuario: J202641 | Clave: 123456 | Jimena Leon
+	Usuario: J202642 | Clave: 123456 | Emilio Ponce
+	Usuario: J202643 | Clave: 123456 | Sofia Tello
+	Usuario: J202644 | Clave: 123456 | Rodrigo Arias
+	Usuario: J202645 | Clave: 123456 | Valentina Rivas
+	Usuario: J202646 | Clave: 123456 | Alejandro Meza
+	Usuario: J202647 | Clave: 123456 | Daniela Pinto
+	Usuario: J202648 | Clave: 123456 | Ximena Aguirre
+	Usuario: J202649 | Clave: 123456 | Renzo Molina
+	Usuario: J202650 | Clave: 123456 | Camilo Herrera
+	Usuario: J202651 | Clave: 123456 | Isabella Garcia
+	Usuario: J202652 | Clave: 123456 | Thiago Vasquez
+	Usuario: J202653 | Clave: 123456 | Antonella Cortez
+	Usuario: J202654 | Clave: 123456 | Benjamin Espino
+	Usuario: J202655 | Clave: 123456 | Ariana Vera
+	Usuario: J202656 | Clave: 123456 | Nicolas Zamora
 	
 	-------------------------
 	RECEPCIONISTAS (ROL U)
