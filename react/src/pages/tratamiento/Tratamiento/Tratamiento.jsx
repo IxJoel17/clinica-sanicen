@@ -11,6 +11,8 @@ function Tratamiento() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const API_REPORTES = 'http://localhost:8080/api/reportes/tratamientos'
+
   useEffect(() => {
     if (user?.correo) {
       cargarHistoriales()
@@ -21,12 +23,12 @@ function Tratamiento() {
     setLoading(true)
     try {
       let idPaciente = null
+
       if (user?.correo) {
         try {
           const paciente = await pacientesAPI.getByCorreo(user.correo)
           idPaciente = paciente.idPaciente
-        } catch (err) {
-          console.log('Paciente no encontrado')
+        } catch {
           setHistoriales([])
           return
         }
@@ -39,11 +41,13 @@ function Tratamiento() {
 
       const historialesData = await historialAPI.getAllByPaciente(idPaciente)
       const historialesArray = historialesData?.data || historialesData || []
+
       const historialesOrdenados = historialesArray.sort((a, b) => {
         const fechaA = new Date(a.fechaRegistro || a.fechaCreacion || 0)
         const fechaB = new Date(b.fechaRegistro || b.fechaCreacion || 0)
         return fechaB - fechaA
       })
+
       setHistoriales(historialesOrdenados)
     } catch (err) {
       console.error('Error cargando historiales:', err)
@@ -62,6 +66,19 @@ function Tratamiento() {
       month: '2-digit',
       year: 'numeric',
     })
+  }
+
+  const imprimirPDF = (idHistorial) => {
+    window.open(`${API_REPORTES}/${idHistorial}/pdf`, '_blank')
+  }
+
+  const descargarPDF = (idHistorial) => {
+    const link = document.createElement('a')
+    link.href = `${API_REPORTES}/${idHistorial}/pdf`
+    link.download = `tratamiento_${idHistorial}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   if (loading) {
@@ -93,9 +110,9 @@ function Tratamiento() {
           historiales.map((historial, index) => (
             <div key={historial.idHistorial || index} className="tratamiento-card">
               <span className="status-badge">ACTIVO</span>
-              <h3>
-                {historial.diagnostico || 'Tratamiento Médico'}
-              </h3>
+
+              <h3>{historial.diagnostico || 'Tratamiento Médico'}</h3>
+
               <div className="meta-info">
                 <span>
                   Especialista: {historial.medico?.nombre} {historial.medico?.apellido}
@@ -109,11 +126,7 @@ function Tratamiento() {
 
                 <h4>Tratamiento:</h4>
                 <ul>
-                  {historial.tratamiento ? (
-                    <li>{historial.tratamiento}</li>
-                  ) : (
-                    <li>No hay tratamiento especificado</li>
-                  )}
+                  <li>{historial.tratamiento || 'No hay tratamiento especificado'}</li>
                 </ul>
 
                 {historial.observaciones && (
@@ -122,6 +135,24 @@ function Tratamiento() {
                     <p>{historial.observaciones}</p>
                   </>
                 )}
+              </div>
+
+              <div className="acciones-tratamiento">
+                <button
+                  type="button"
+                  className="btn-imprimir-tratamiento"
+                  onClick={() => imprimirPDF(historial.idHistorial)}
+                >
+                  🖨️ Imprimir
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-descargar-tratamiento"
+                  onClick={() => descargarPDF(historial.idHistorial)}
+                >
+                  ⬇️ Descargar PDF
+                </button>
               </div>
             </div>
           ))

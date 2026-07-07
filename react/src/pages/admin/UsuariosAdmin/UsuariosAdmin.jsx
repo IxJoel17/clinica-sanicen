@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react'
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
-import { usuariosAPI } from '../../../services/api'
+import { useAuth } from '../../../context/AuthContext'
+import { usuariosAPI, medicosAPI, citasAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './UsuariosAdmin.css'
 
 function UsuariosAdmin() {
+  const { user } = useAuth()
+  const esAdmin = user?.rol === 'administrador'
+
   const [usuarios, setUsuarios] = useState([])
+  const [medicos, setMedicos] = useState([])
+  const [busqueda, setBusqueda] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingUsuario, setEditingUsuario] = useState(null)
+
+  const [showHorarioModal, setShowHorarioModal] = useState(false)
+  const [medicoHorario, setMedicoHorario] = useState(null)
+  const [citasMedico, setCitasMedico] = useState([])
+
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -29,21 +40,72 @@ function UsuariosAdmin() {
   ]
 
   useEffect(() => {
-    cargarUsuarios()
+    cargarDatos()
   }, [])
 
-  const cargarUsuarios = async () => {
+  const cargarDatos = async () => {
     setLoading(true)
     try {
-      const response = await usuariosAPI.getAll()
-      setUsuarios(response?.data || response || [])
+      const usuariosData = await usuariosAPI.getAll()
+      const medicosData = await medicosAPI.getAll()
+
+      setUsuarios(usuariosData?.data || usuariosData || [])
+      setMedicos(medicosData?.data || medicosData || [])
     } catch (err) {
-      setError('Error al cargar los usuarios')
+      setError('Error al cargar los datos')
       console.error(err)
     } finally {
       setLoading(false)
     }
   }
+
+  const buscarMedicoPorUsuario = (usuario) => {
+    return medicos.find(
+      (medico) =>
+        medico.correo?.toLowerCase() === usuario.correo?.toLowerCase() ||
+        (
+          medico.nombre?.toLowerCase() === usuario.nombre?.toLowerCase() &&
+          medico.apellido?.toLowerCase() === usuario.apellido?.toLowerCase()
+        )
+    )
+  }
+
+  const handleVerHorario = async (usuario) => {
+    const medico = buscarMedicoPorUsuario(usuario)
+
+    if (!medico) {
+      alert('No se encontró el registro médico asociado a este usuario.')
+      return
+    }
+
+    setMedicoHorario(medico)
+    setShowHorarioModal(true)
+
+    try {
+      const response = await citasAPI.getByMedico(medico.idMedico)
+      const citas = response?.citas || response?.data || response || []
+      setCitasMedico(Array.isArray(citas) ? citas : [])
+    } catch (err) {
+      console.error('Error cargando citas del médico:', err)
+      setCitasMedico([])
+    }
+  }
+
+  const usuariosFiltrados = usuarios.filter((usuario) => {
+    const texto = busqueda.toLowerCase().trim()
+    if (!texto) return true
+
+    return (
+      String(usuario.idUsuario || '').toLowerCase().includes(texto) ||
+      String(usuario.usuario || '').toLowerCase().includes(texto) ||
+      String(usuario.nombre || '').toLowerCase().includes(texto) ||
+      String(usuario.apellido || '').toLowerCase().includes(texto) ||
+      String(usuario.correo || '').toLowerCase().includes(texto) ||
+      String(usuario.telefono || '').toLowerCase().includes(texto) ||
+      String(usuario.rol || '').toLowerCase().includes(texto) ||
+      String(usuario.dni || '').toLowerCase().includes(texto)
+    )
+  })
 
   const handleOpenModal = (usuario = null) => {
     if (usuario) {
@@ -67,6 +129,7 @@ function UsuariosAdmin() {
         rol: 'paciente',
       })
     }
+
     setShowModal(true)
     setError('')
     setSuccess('')
@@ -80,10 +143,7 @@ function UsuariosAdmin() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
+    setFormData({ ...formData, [name]: value })
   }
 
   const handleSubmit = async (e) => {
@@ -100,38 +160,38 @@ function UsuariosAdmin() {
         setSuccess('Usuario creado exitosamente')
       }
 
-      await cargarUsuarios()
+      await cargarDatos()
+
       setTimeout(() => {
         handleCloseModal()
         setSuccess('')
       }, 1500)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al guardar el usuario')
+      setError(err.response?.data?.error || err.message || 'Error al guardar el usuario')
     }
   }
 
   const handleDelete = async (id, nombre) => {
-    if (!window.confirm(`¿Está seguro de que desea eliminar al usuario ${nombre}?`)) {
-      return
-    }
+    if (!window.confirm(`¿Está seguro de que desea eliminar al usuario ${nombre}?`)) return
 
     try {
       await usuariosAPI.delete(id)
       setSuccess('Usuario eliminado exitosamente')
-      await cargarUsuarios()
+      await cargarDatos()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al eliminar el usuario')
+      setError(err.response?.data?.error || err.message || 'Error al eliminar el usuario')
     }
   }
 
   const formatFecha = (fecha) => {
     if (!fecha) return 'N/A'
-    return new Date(fecha).toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
+    return new Date(fecha).toLocaleDateString('es-ES')
+  }
+
+  const formatHora = (hora) => {
+    if (!hora) return ''
+    return String(hora).substring(0, 5)
   }
 
   if (loading) {
@@ -149,63 +209,112 @@ function UsuariosAdmin() {
       <div className="usuarios-admin-container container">
         <div className="admin-header-section">
           <h1>Gestión de Usuarios</h1>
-          <button onClick={() => handleOpenModal()} className="btn-crear-usuario">
-            + Nuevo Usuario
-          </button>
+
+          <div className="usuarios-header-actions">
+            <input
+              type="text"
+              className="input-buscar-usuario"
+              placeholder="Buscar por nombre, usuario, correo, rol o DNI..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+
+            {esAdmin && (
+              <button onClick={() => handleOpenModal()} className="btn-crear-usuario">
+                + Nuevo Usuario
+              </button>
+            )}
+          </div>
         </div>
 
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
+
+        <div className="usuarios-resultados">
+          Mostrando {usuariosFiltrados.length} de {usuarios.length} usuarios
+        </div>
 
         <div className="usuarios-table-container">
           <table className="usuarios-table">
             <thead>
               <tr>
                 <th>ID</th>
+                {esAdmin && <th>Usuario</th>}
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Correo</th>
                 <th>Teléfono</th>
                 <th>Rol</th>
                 <th>Fecha Creación</th>
-                <th>Acciones</th>
+                <th>Horario</th>
+                {esAdmin && <th>Acciones</th>}
               </tr>
             </thead>
+
             <tbody>
-              {usuarios.length === 0 ? (
+              {usuariosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="no-data">No hay usuarios registrados</td>
+                  <td colSpan={esAdmin ? 10 : 8} className="no-data">
+                    No se encontraron usuarios
+                  </td>
                 </tr>
               ) : (
-                usuarios.map((usuario) => (
+                usuariosFiltrados.map((usuario) => (
                   <tr key={usuario.idUsuario}>
                     <td>{usuario.idUsuario}</td>
+
+                    {esAdmin && <td>{usuario.usuario || 'Sin usuario'}</td>}
+
                     <td>{usuario.nombre}</td>
                     <td>{usuario.apellido}</td>
                     <td>{usuario.correo || 'N/A'}</td>
                     <td>{usuario.telefono || 'N/A'}</td>
                     <td>
-                      <span className={`badge-rol rol-${usuario.rol}`}>{usuario.rol}</span>
+                      <span className={`badge-rol rol-${usuario.rol}`}>
+                        {usuario.rol}
+                      </span>
                     </td>
                     <td>{formatFecha(usuario.fechaCreacion)}</td>
+
                     <td>
-                      <div className="action-buttons">
+                      {usuario.rol === 'medico' ? (
                         <button
-                          onClick={() => handleOpenModal(usuario)}
-                          className="btn-edit"
-                          title="Editar"
+                          className="btn-horario"
+                          onClick={() => handleVerHorario(usuario)}
                         >
-                          ✏️
+                          📅 Ver
                         </button>
-                        <button
-                          onClick={() => handleDelete(usuario.idUsuario, `${usuario.nombre} ${usuario.apellido}`)}
-                          className="btn-delete"
-                          title="Eliminar"
-                        >
-                          🗑️
-                        </button>
-                      </div>
+                      ) : (
+                        <span className="sin-horario">No aplica</span>
+                      )}
                     </td>
+
+                    {esAdmin && (
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            onClick={() => handleOpenModal(usuario)}
+                            className="btn-edit"
+                            title="Editar"
+                          >
+                            ✏️
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleDelete(
+                                usuario.idUsuario,
+                                `${usuario.nombre} ${usuario.apellido}`
+                              )
+                            }
+                            className="btn-delete"
+                            title="Eliminar"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -213,8 +322,67 @@ function UsuariosAdmin() {
           </table>
         </div>
 
-        {/* Modal */}
-        {showModal && (
+        {showHorarioModal && medicoHorario && (
+          <div className="modal-overlay" onClick={() => setShowHorarioModal(false)}>
+            <div className="modal-content horario-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>
+                  Horario del Dr(a). {medicoHorario.nombre} {medicoHorario.apellido}
+                </h2>
+
+                <button
+                  className="btn-close-modal"
+                  onClick={() => setShowHorarioModal(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <button
+                className="btn-volver-horario"
+                onClick={() => setShowHorarioModal(false)}
+              >
+                ← Volver
+              </button>
+
+              <div className="horario-info-medico">
+                <p><strong>Correo:</strong> {medicoHorario.correo || 'N/A'}</p>
+                <p><strong>Especialidad:</strong> {medicoHorario.especialidad?.nombre || medicoHorario.especialidad || 'No registrada'}</p>
+              </div>
+
+              <h3>Citas asignadas</h3>
+
+              {citasMedico.length === 0 ? (
+                <p>No tiene citas registradas.</p>
+              ) : (
+                <div className="horario-lista">
+                  {citasMedico.map((cita) => (
+                    <div key={cita.idCita} className="horario-card">
+                      <strong>
+                        {formatFecha(cita.fecha)} - {formatHora(cita.hora)}
+                      </strong>
+                      <p>
+                        <strong>Paciente:</strong>{' '}
+                        {cita.paciente?.nombre} {cita.paciente?.apellido}
+                      </p>
+                      <p><strong>Estado:</strong> {cita.estado}</p>
+                      <p><strong>Motivo:</strong> {cita.motivo || 'Consulta médica'}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <h3>Descansos</h3>
+
+              <div className="horario-descansos">
+                <p>☕ 12:00 PM - 02:00 PM | Descanso de almuerzo</p>
+                <p>🕕 Después de 06:00 PM | Fin de atención</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showModal && esAdmin && (
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
@@ -223,6 +391,7 @@ function UsuariosAdmin() {
                   ×
                 </button>
               </div>
+
               <form onSubmit={handleSubmit} className="usuario-form">
                 <div className="form-row">
                   <div className="form-group">
@@ -235,6 +404,7 @@ function UsuariosAdmin() {
                       required
                     />
                   </div>
+
                   <div className="form-group">
                     <label>Apellido</label>
                     <input
@@ -256,6 +426,7 @@ function UsuariosAdmin() {
                       onChange={handleChange}
                     />
                   </div>
+
                   <div className="form-group">
                     <label>Teléfono</label>
                     <input
@@ -294,6 +465,7 @@ function UsuariosAdmin() {
                   <button type="button" onClick={handleCloseModal} className="btn-cancel">
                     Cancelar
                   </button>
+
                   <button type="submit" className="btn-save">
                     {editingUsuario ? 'Actualizar' : 'Crear'}
                   </button>
@@ -308,4 +480,3 @@ function UsuariosAdmin() {
 }
 
 export default UsuariosAdmin
-

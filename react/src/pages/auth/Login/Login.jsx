@@ -92,7 +92,7 @@ function Login() {
     }
 
     try {
-      await login(formData.usuario, formData.contrasena)
+      await login(formData.usuario.trim().toUpperCase(), formData.contrasena.trim())
 
 const primeraLetra = formData.usuario.charAt(0).toUpperCase()
 

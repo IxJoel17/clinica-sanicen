@@ -85,4 +85,25 @@
 .status-badge.pausado {
   background-color: #f39c12;
 }
+.acciones-tratamiento {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
 
+.btn-imprimir-tratamiento,
+.btn-descargar-tratamiento {
+  background: #a32454;
+  color: white;
+  border: 2px solid #00bcd4;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-imprimir-tratamiento:hover,
+.btn-descargar-tratamiento:hover {
+  background: #8c1c45;
+}

@@ -279,7 +279,107 @@
   border: 1px solid #c3e6cb;
   margin-bottom: 20px;
 }
+.usuarios-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
 
+.input-buscar-usuario {
+  width: 360px;
+  max-width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #00bcd4;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #ffffff;
+}
+
+.input-buscar-usuario:focus {
+  border-color: #a32454;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15);
+}
+
+.usuarios-resultados {
+  margin: 10px 0 15px;
+  color: #555;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.btn-horario {
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 8px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-horario:hover {
+  background: #0097a7;
+}
+
+.sin-horario {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.horario-modal {
+  max-width: 760px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.btn-volver-horario {
+  background: #a32454;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.horario-info-medico {
+  background: #f8fbfc;
+  border-left: 5px solid #00bcd4;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.horario-info-medico p {
+  margin: 4px 0;
+}
+
+.horario-lista {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.horario-card {
+  background: #f8fbfc;
+  border-left: 5px solid #00bcd4;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.horario-card p {
+  margin: 4px 0;
+}
+
+.horario-descansos {
+  background: #fff7e6;
+  border-left: 5px solid #f4a100;
+  padding: 12px;
+  border-radius: 8px;
+}
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
