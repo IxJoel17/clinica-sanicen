@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
 import { useAuth } from '../../../context/AuthContext'
 import { medicosAPI, citasAPI } from '../../../services/api'
@@ -22,6 +21,7 @@ function PacientesMedico() {
 
   const cargarPacientes = async () => {
     setLoading(true)
+
     try {
       const medico = await medicosAPI.getByCorreo(user.correo)
       setMedicoInfo(medico)
@@ -29,27 +29,28 @@ function PacientesMedico() {
       if (medico.idMedico) {
         const citasData = await citasAPI.getByMedico(medico.idMedico)
         const citas = citasData?.citas || citasData || []
-
         const pacientesMap = new Map()
 
         citas.forEach((cita) => {
           if (cita.paciente) {
             const idPaciente = cita.paciente.idPaciente
+
             if (!pacientesMap.has(idPaciente)) {
-              const citasDelPaciente = citas.filter((c) => c.paciente?.idPaciente === idPaciente)
-              const ultimaCita = citasDelPaciente
-                .sort((a, b) => {
-                  const fechaA = new Date(`${a.fecha}T${a.hora}`)
-                  const fechaB = new Date(`${b.fecha}T${b.hora}`)
-                  return fechaB - fechaA
-                })[0]
+              const citasDelPaciente = citas.filter(
+                (c) => c.paciente?.idPaciente === idPaciente
+              )
+
+              const ultimaCita = [...citasDelPaciente].sort((a, b) => {
+                const fechaA = new Date(`${a.fecha}T${a.hora}`)
+                const fechaB = new Date(`${b.fecha}T${b.hora}`)
+                return fechaB - fechaA
+              })[0]
 
               const estaActivo =
                 ultimaCita &&
-                (ultimaCita.estado === 'completada' ||
-                  ultimaCita.estado === 'confirmada' ||
-                  ultimaCita.estado === 'programada' ||
-                  ultimaCita.estado === 'pendiente')
+                ['completada', 'confirmada', 'programada', 'pendiente'].includes(
+                  ultimaCita.estado
+                )
 
               pacientesMap.set(idPaciente, {
                 ...cita.paciente,
@@ -79,6 +80,7 @@ function PacientesMedico() {
 
   const formatFecha = (fecha) => {
     if (!fecha) return ''
+
     try {
       return new Date(fecha).toLocaleDateString('es-ES', {
         day: '2-digit',
@@ -91,12 +93,18 @@ function PacientesMedico() {
   }
 
   const pacientesFiltrados = pacientes.filter((paciente) => {
-    const search = searchTerm.toLowerCase()
+    const search = searchTerm.toLowerCase().trim()
+
+    if (!search) return true
+
     return (
-      paciente.nombre?.toLowerCase().includes(search) ||
-      paciente.apellido?.toLowerCase().includes(search) ||
-      paciente.nroHistoria?.toLowerCase().includes(search) ||
-      paciente.correo?.toLowerCase().includes(search)
+      String(paciente.nombre || '').toLowerCase().includes(search) ||
+      String(paciente.apellido || '').toLowerCase().includes(search) ||
+      String(paciente.dni || '').toLowerCase().includes(search) ||
+      String(paciente.nroHistoria || '').toLowerCase().includes(search) ||
+      String(paciente.nro_historia || '').toLowerCase().includes(search) ||
+      String(paciente.correo || '').toLowerCase().includes(search) ||
+      String(paciente.telefono || '').toLowerCase().includes(search)
     )
   })
 
@@ -115,6 +123,7 @@ function PacientesMedico() {
       <div className="pacientes-medico-container container">
         <div className="pacientes-medico-header">
           <h1>Mis Pacientes</h1>
+
           {medicoInfo && (
             <p className="medico-nombre">
               {medicoInfo.nombre} {medicoInfo.apellido}
@@ -126,17 +135,23 @@ function PacientesMedico() {
         <div className="search-section">
           <input
             type="text"
-            placeholder="Buscar por nombre, apellido, número de historia o correo..."
+            placeholder="Buscar por nombre, apellido, DNI, historia, correo o teléfono..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
+
+          {searchTerm && (
+            <button className="btn-limpiar-busqueda" onClick={() => setSearchTerm('')}>
+              Limpiar
+            </button>
+          )}
         </div>
 
         {error && <div className="error-message">{error}</div>}
 
         <div className="pacientes-count">
-          Total de pacientes atendidos: {pacientesFiltrados.length}
+          Mostrando {pacientesFiltrados.length} de {pacientes.length} pacientes
         </div>
 
         <div className="pacientes-grid">
@@ -151,33 +166,46 @@ function PacientesMedico() {
                   <h3>
                     {paciente.nombre} {paciente.apellido}
                   </h3>
+
                   <span className={`estado-badge ${paciente.estaActivo ? 'activo' : 'inactivo'}`}>
                     {paciente.estaActivo ? 'Activo' : 'Inactivo'}
                   </span>
                 </div>
+
                 <div className="paciente-card-body">
-                  {paciente.nroHistoria && (
+                  {paciente.dni && (
                     <div className="paciente-info-item">
-                      <strong>Nro. Historia:</strong>
-                      <span>{paciente.nroHistoria}</span>
+                      <strong>DNI:</strong>
+                      <span>{paciente.dni}</span>
                     </div>
                   )}
+
+                  {(paciente.nroHistoria || paciente.nro_historia) && (
+                    <div className="paciente-info-item">
+                      <strong>Nro. Historia:</strong>
+                      <span>{paciente.nroHistoria || paciente.nro_historia}</span>
+                    </div>
+                  )}
+
                   {paciente.telefono && (
                     <div className="paciente-info-item">
                       <strong>Teléfono:</strong>
                       <span>{paciente.telefono}</span>
                     </div>
                   )}
+
                   {paciente.correo && (
                     <div className="paciente-info-item">
                       <strong>Correo:</strong>
                       <span>{paciente.correo}</span>
                     </div>
                   )}
+
                   <div className="paciente-info-item">
                     <strong>Total de Citas:</strong>
                     <span>{paciente.totalCitas}</span>
                   </div>
+
                   {paciente.ultimaCita && (
                     <div className="paciente-info-item">
                       <strong>Última Cita:</strong>
@@ -195,4 +223,3 @@ function PacientesMedico() {
 }
 
 export default PacientesMedico
-

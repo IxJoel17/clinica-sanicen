@@ -645,12 +645,12 @@ function Citas() {
 
                       <div className="cita-card-actions">
                         <Link
-                          to={`/detalle-registro?citaId=${cita.idCita}`}
-                          className="btn-cita-info"
-                        >
-                          <span>📋</span>
-                          Ver información
-                        </Link>
+                        to={`/detalle-registro?id=${registro.idHistorial}`}
+                        className="btn-cita-info"
+                      >
+                        <span>📋</span>
+                        Ver información
+                      </Link>
 
                         {puedeCancelarOReagendar(cita) && (
                           <>

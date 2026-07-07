@@ -35,11 +35,11 @@
 .menu-items {
   list-style: none;
   padding: 0;
-  margin: 70px 0 ;
+  margin: 25px 0 10px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   align-items: center;
 }
 
@@ -51,16 +51,16 @@
 
 .menu-items a {
   width: 88%;
-  min-height: 56px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   color: white;
   text-decoration: none;
-  padding: 14px 16px;
+  padding: 10px 14px;
   border-radius: 14px;
-  font-size: 1.12rem;
+  font-size: 1rem;
   font-weight: 700;
   transition: all 0.25s ease;
   text-align: center;

@@ -66,6 +66,14 @@ function Sidebar() {
                 📈 Servicios
               </Link>
             </li>
+            <li>
+              <Link
+                to="/consulta-cuenta"
+                className={isActive('/consulta-cuenta') ? 'active' : ''}
+              >
+                🔎 Consulta de Cuenta
+              </Link>
+            </li>
           </>
         )}
 
@@ -139,13 +147,13 @@ function Sidebar() {
               </Link>
             </li>
             <li>
-              <Link to="/citas" className={isActive('/citas') ? 'active-citas' : ''}>
-                ⏰ Cita
+              <Link to="/perfil" className={isActive('/perfil') ? 'active-profile' : ''}>
+                👤 Perfil
               </Link>
             </li>
             <li>
-              <Link to="/perfil" className={isActive('/perfil') ? 'active-profile' : ''}>
-                👤 Perfil
+              <Link to="/citas" className={isActive('/citas') ? 'active-citas' : ''}>
+                ⏰ Cita
               </Link>
             </li>
             <li>
