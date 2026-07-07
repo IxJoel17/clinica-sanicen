@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react'
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
-import { medicosAPI, especialidadesAPI } from '../../../services/api'
+import { medicosAPI, especialidadesAPI, citasAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './MedicosAdmin.css'
 
 function MedicosAdmin() {
   const [medicos, setMedicos] = useState([])
+  const [busqueda, setBusqueda] = useState('')
   const [especialidades, setEspecialidades] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingMedico, setEditingMedico] = useState(null)
+
+  const [showHorarioModal, setShowHorarioModal] = useState(false)
+  const [medicoHorario, setMedicoHorario] = useState(null)
+  const [citasMedico, setCitasMedico] = useState([])
+  const [loadingHorario, setLoadingHorario] = useState(false)
+
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -34,6 +41,7 @@ function MedicosAdmin() {
         medicosAPI.getAllIncludingInactive(),
         especialidadesAPI.getAll(),
       ])
+
       setMedicos(medicosRes?.data || medicosRes || [])
       setEspecialidades(especialidadesRes?.data || especialidadesRes || [])
     } catch (err) {
@@ -42,6 +50,39 @@ function MedicosAdmin() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleVerHorario = async (medico) => {
+    setMedicoHorario(medico)
+    setShowHorarioModal(true)
+    setLoadingHorario(true)
+    setCitasMedico([])
+
+    try {
+      const response = await citasAPI.getByMedico(medico.idMedico)
+      const citas = response?.citas || response?.data || response || []
+
+      const citasOrdenadas = Array.isArray(citas)
+        ? [...citas].sort((a, b) => {
+            const fechaA = new Date(`${a.fecha}T${String(a.hora || '00:00').substring(0, 5)}`)
+            const fechaB = new Date(`${b.fecha}T${String(b.hora || '00:00').substring(0, 5)}`)
+            return fechaA - fechaB
+          })
+        : []
+
+      setCitasMedico(citasOrdenadas)
+    } catch (err) {
+      console.error('Error cargando horario del médico:', err)
+      setCitasMedico([])
+    } finally {
+      setLoadingHorario(false)
+    }
+  }
+
+  const handleCerrarHorario = () => {
+    setShowHorarioModal(false)
+    setMedicoHorario(null)
+    setCitasMedico([])
   }
 
   const handleOpenModal = (medico = null) => {
@@ -70,6 +111,7 @@ function MedicosAdmin() {
         activo: true,
       })
     }
+
     setShowModal(true)
     setError('')
     setSuccess('')
@@ -83,6 +125,7 @@ function MedicosAdmin() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
+
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
@@ -109,12 +152,13 @@ function MedicosAdmin() {
       }
 
       await cargarDatos()
+
       setTimeout(() => {
         handleCloseModal()
         setSuccess('')
       }, 1500)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al guardar el médico')
+      setError(err.response?.data?.error || err.message || 'Error al guardar el médico')
     }
   }
 
@@ -129,9 +173,59 @@ function MedicosAdmin() {
       await cargarDatos()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al dar de baja al médico')
+      setError(err.response?.data?.error || err.message || 'Error al dar de baja al médico')
     }
   }
+
+  const formatFecha = (fecha) => {
+    if (!fecha) return 'N/A'
+
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  }
+
+  const formatHora = (hora) => {
+    if (!hora) return ''
+    return String(hora).substring(0, 5)
+  }
+
+  const obtenerNombrePaciente = (cita) => {
+    if (cita.paciente) {
+      return `${cita.paciente.nombre || ''} ${cita.paciente.apellido || ''}`.trim()
+    }
+
+    return cita.nombrePaciente || cita.pacienteNombre || 'Paciente no registrado'
+  }
+
+  const obtenerClaseEstado = (estado) => {
+    const estadoNormalizado = String(estado || '').toLowerCase()
+
+    if (estadoNormalizado === 'completada') return 'horario-estado completada'
+    if (estadoNormalizado === 'pendiente') return 'horario-estado pendiente'
+    if (estadoNormalizado === 'programada') return 'horario-estado programada'
+    if (estadoNormalizado === 'cancelada') return 'horario-estado cancelada'
+
+    return 'horario-estado'
+  }
+
+  const medicosFiltrados = medicos.filter((medico) => {
+    const texto = busqueda.toLowerCase().trim()
+
+    if (!texto) return true
+
+    return (
+      String(medico.idMedico || '').toLowerCase().includes(texto) ||
+      String(medico.nombre || '').toLowerCase().includes(texto) ||
+      String(medico.apellido || '').toLowerCase().includes(texto) ||
+      String(medico.dni || '').toLowerCase().includes(texto) ||
+      String(medico.telefono || '').toLowerCase().includes(texto) ||
+      String(medico.correo || '').toLowerCase().includes(texto) ||
+      String(medico.especialidad?.nombre || '').toLowerCase().includes(texto)
+    )
+  })
 
   if (loading) {
     return (
@@ -148,9 +242,24 @@ function MedicosAdmin() {
       <div className="medicos-admin-container container">
         <div className="admin-header-section">
           <h1>Gestion de médicos</h1>
-          <button onClick={() => handleOpenModal()} className="btn-crear-medico">
-            + Nuevo Médico
-          </button>
+
+          <div className="medicos-header-actions">
+            <input
+              type="text"
+              className="input-buscar-medico"
+              placeholder="Buscar por nombre, DNI, correo o especialidad..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+
+            <button onClick={() => handleOpenModal()} className="btn-crear-medico">
+              + Nuevo Médico
+            </button>
+          </div>
+        </div>
+
+        <div className="medicos-resultados">
+          Mostrando {medicosFiltrados.length} de {medicos.length} médicos
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -168,16 +277,20 @@ function MedicosAdmin() {
                 <th>Teléfono</th>
                 <th>Correo</th>
                 <th>Estado</th>
+                <th>Horario</th>
                 <th>Acciones</th>
               </tr>
             </thead>
+
             <tbody>
-              {medicos.length === 0 ? (
+              {medicosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="no-data">No hay médicos registrados</td>
+                  <td colSpan="10" className="no-data">
+                    No se encontraron médicos
+                  </td>
                 </tr>
               ) : (
-                medicos.map((medico) => (
+                medicosFiltrados.map((medico) => (
                   <tr key={medico.idMedico} className={!medico.activo ? 'inactive' : ''}>
                     <td>{medico.idMedico}</td>
                     <td>{medico.nombre}</td>
@@ -187,6 +300,17 @@ function MedicosAdmin() {
                     <td>{medico.telefono}</td>
                     <td>{medico.correo}</td>
                     <td>{medico.activo ? 'Activo' : 'Inactivo'}</td>
+
+                    <td>
+                      <button
+                        className="btn-horario-medico"
+                        onClick={() => handleVerHorario(medico)}
+                        title="Ver horario del médico"
+                      >
+                        📅 Ver horario
+                      </button>
+                    </td>
+
                     <td>
                       <div className="action-buttons">
                         <button
@@ -196,6 +320,7 @@ function MedicosAdmin() {
                         >
                           ✏️
                         </button>
+
                         {medico.activo && (
                           <button
                             onClick={() => handleDelete(medico.idMedico)}
@@ -214,7 +339,106 @@ function MedicosAdmin() {
           </table>
         </div>
 
-        {/* Modal para crear/editar */}
+        {showHorarioModal && medicoHorario && (
+          <div className="modal-overlay" onClick={handleCerrarHorario}>
+            <div className="modal-content horario-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>
+                  Horario del Dr(a). {medicoHorario.nombre} {medicoHorario.apellido}
+                </h2>
+
+                <button className="btn-close-modal" onClick={handleCerrarHorario}>
+                  ×
+                </button>
+              </div>
+
+              <button className="btn-volver-horario" onClick={handleCerrarHorario}>
+                ← Volver
+              </button>
+
+              <div className="horario-info-medico">
+                <p>
+                  <strong>Especialidad:</strong>{' '}
+                  {medicoHorario.especialidad?.nombre || 'Sin especialidad'}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {medicoHorario.correo || 'N/A'}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {medicoHorario.telefono || 'N/A'}
+                </p>
+              </div>
+
+              <div className="horario-resumen-grid">
+                <div className="horario-resumen-card">
+                  <strong>{citasMedico.length}</strong>
+                  <span>Citas registradas</span>
+                </div>
+
+                <div className="horario-resumen-card">
+                  <strong>
+                    {citasMedico.filter((c) => c.estado === 'pendiente').length}
+                  </strong>
+                  <span>Pendientes</span>
+                </div>
+
+                <div className="horario-resumen-card">
+                  <strong>
+                    {citasMedico.filter((c) => c.estado === 'programada').length}
+                  </strong>
+                  <span>Programadas</span>
+                </div>
+
+                <div className="horario-resumen-card">
+                  <strong>
+                    {citasMedico.filter((c) => c.estado === 'completada').length}
+                  </strong>
+                  <span>Completadas</span>
+                </div>
+              </div>
+
+              <h3>Citas asignadas</h3>
+
+              {loadingHorario ? (
+                <p>Cargando horario...</p>
+              ) : citasMedico.length === 0 ? (
+                <p>No tiene citas registradas.</p>
+              ) : (
+                <div className="horario-lista">
+                  {citasMedico.map((cita) => (
+                    <div key={cita.idCita} className="horario-card">
+                      <div className="horario-card-top">
+                        <strong>
+                          {formatFecha(cita.fecha)} - {formatHora(cita.hora)}
+                        </strong>
+
+                        <span className={obtenerClaseEstado(cita.estado)}>
+                          {cita.estado || 'Sin estado'}
+                        </span>
+                      </div>
+
+                      <p>
+                        <strong>Paciente:</strong> {obtenerNombrePaciente(cita)}
+                      </p>
+                      <p>
+                        <strong>Motivo:</strong> {cita.motivo || 'Consulta médica'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <h3>Descansos</h3>
+
+              <div className="horario-descansos">
+                <p>☕ 12:00 PM - 02:00 PM | Descanso de almuerzo</p>
+                <p>🕕 Después de 06:00 PM | Fin de atención</p>
+                <p>📌 Domingo | Sin atención programada</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showModal && (
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -224,6 +448,7 @@ function MedicosAdmin() {
                   ×
                 </button>
               </div>
+
               <form onSubmit={handleSubmit} className="medico-form">
                 <div className="form-row">
                   <div className="form-group">
@@ -236,6 +461,7 @@ function MedicosAdmin() {
                       required
                     />
                   </div>
+
                   <div className="form-group">
                     <label>Apellido</label>
                     <input
@@ -258,6 +484,7 @@ function MedicosAdmin() {
                       maxLength="8"
                     />
                   </div>
+
                   <div className="form-group">
                     <label>Teléfono</label>
                     <input
@@ -305,6 +532,7 @@ function MedicosAdmin() {
                       ))}
                     </select>
                   </div>
+
                   <div className="form-group">
                     <label>
                       <input
@@ -338,4 +566,3 @@ function MedicosAdmin() {
 }
 
 export default MedicosAdmin
-

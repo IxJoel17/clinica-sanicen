@@ -121,6 +121,48 @@
   border: 1px solid #ffcccc;
   margin-bottom: 20px;
 }
+.busqueda-fecha-citas {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 22px;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+}
+
+.busqueda-fecha-citas label {
+  font-weight: 700;
+  color: #1d2d44;
+}
+
+.input-buscar-fecha {
+  padding: 10px 14px;
+  border: 2px solid #00bcd4;
+  border-radius: 8px;
+  outline: none;
+}
+
+.btn-limpiar-fecha {
+  padding: 10px 18px;
+  background: #a32454;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-limpiar-fecha:hover {
+  background: #8c1c45;
+}
+
+.resultado-fecha {
+  color: #555;
+  font-weight: 600;
+}
 
 @media (max-width: 768px) {
   .citas-table {

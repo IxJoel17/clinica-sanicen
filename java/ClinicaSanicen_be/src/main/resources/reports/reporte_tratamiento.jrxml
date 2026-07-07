@@ -259,14 +259,14 @@
             </staticText>
 
             <line>
-                <reportElement x="55" y="745" width="170" height="1"/>
+                <reportElement x="55" y="737" width="170" height="1"/>
                 <graphicElement>
                     <pen lineWidth="0.8" lineColor="#333333"/>
                 </graphicElement>
             </line>
 
             <staticText>
-                <reportElement x="55" y="732" width="170" height="14"/>
+                <reportElement x="55" y="738" width="170" height="14"/>
                 <textElement textAlignment="Center">
                     <font size="8"/>
                 </textElement>
@@ -274,14 +274,14 @@
             </staticText>
 
             <line>
-                <reportElement x="290" y="745" width="170" height="1"/>
+                <reportElement x="290" y="737" width="170" height="1"/>
                 <graphicElement>
                     <pen lineWidth="0.8" lineColor="#333333"/>
                 </graphicElement>
             </line>
 
             <staticText>
-                <reportElement x="290" y="750" width="170" height="14"/>
+                <reportElement x="290" y="738" width="170" height="14"/>
                 <textElement textAlignment="Center">
                     <font size="8"/>
                 </textElement>

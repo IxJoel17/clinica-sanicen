@@ -35,7 +35,7 @@
 
             <!-- Línea superior roja -->
             <rectangle>
-                <reportElement x="0" y="0" width="515" height="10" backcolor="#E8505B" mode="Opaque"/>
+                <reportElement x="0" y="0" width="515" height="10" backcolor="#EA6248" mode="Opaque"/>
                 <graphicElement>
                     <pen lineWidth="0"/>
                 </graphicElement>
@@ -104,7 +104,7 @@
 
             <!-- Título central -->
             <staticText>
-                <reportElement x="0" y="145" width="515" height="28" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <reportElement x="0" y="145" width="515" height="28" backcolor="#00A199" forecolor="#FFFFFF" mode="Opaque"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
                     <font size="13" isBold="true"/>
                 </textElement>
@@ -257,7 +257,7 @@
 
             <!-- Detalle del pago -->
             <staticText>
-                <reportElement x="0" y="545" width="515" height="24" backcolor="#E8505B" forecolor="#FFFFFF" mode="Opaque"/>
+                <reportElement x="0" y="545" width="515" height="24" backcolor="#00A199" forecolor="#FFFFFF" mode="Opaque"/>
                 <textElement verticalAlignment="Middle">
                     <font size="10" isBold="true"/>
                 </textElement>

@@ -9,6 +9,7 @@ function CitasAdmin() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('todas')
+  const [fechaBusqueda, setFechaBusqueda] = useState('')
 
   useEffect(() => {
     cargarCitas()
@@ -19,13 +20,13 @@ function CitasAdmin() {
     try {
       const response = await citasAPI.getAll()
       const citasData = response?.data || response || []
-      // Ordenar por fecha (más próximas primero - ascendente)
+
       const citasOrdenadas = citasData.sort((a, b) => {
         const fechaA = new Date(`${a.fecha}T${a.hora}`)
         const fechaB = new Date(`${b.fecha}T${b.hora}`)
-        // Ordenar de más próxima a menos próxima
         return fechaA - fechaB
       })
+
       setCitas(citasOrdenadas)
     } catch (err) {
       setError('Error al cargar las citas')
@@ -46,12 +47,17 @@ function CitasAdmin() {
 
   const formatHora = (hora) => {
     if (!hora) return ''
-    return hora.substring(0, 5)
+    return String(hora).substring(0, 5)
   }
 
   const citasFiltradas = citas.filter((cita) => {
-    if (filtroEstado === 'todas') return true
-    return cita.estado === filtroEstado
+    const cumpleEstado =
+      filtroEstado === 'todas' || cita.estado === filtroEstado
+
+    const cumpleFecha =
+      !fechaBusqueda || String(cita.fecha).substring(0, 10) === fechaBusqueda
+
+    return cumpleEstado && cumpleFecha
   })
 
   if (loading) {
@@ -78,24 +84,49 @@ function CitasAdmin() {
           >
             Todas ({citas.length})
           </button>
+
           <button
             className={`filtro-btn ${filtroEstado === 'programada' ? 'active' : ''}`}
             onClick={() => setFiltroEstado('programada')}
           >
             Programadas ({citas.filter((c) => c.estado === 'programada').length})
           </button>
+
           <button
             className={`filtro-btn ${filtroEstado === 'confirmada' ? 'active' : ''}`}
             onClick={() => setFiltroEstado('confirmada')}
           >
             Confirmadas ({citas.filter((c) => c.estado === 'confirmada').length})
           </button>
+
           <button
             className={`filtro-btn ${filtroEstado === 'completada' ? 'active' : ''}`}
             onClick={() => setFiltroEstado('completada')}
           >
             Completadas ({citas.filter((c) => c.estado === 'completada').length})
           </button>
+        </div>
+
+        <div className="busqueda-fecha-citas">
+          <label>Buscar por fecha:</label>
+
+          <input
+            type="date"
+            className="input-buscar-fecha"
+            value={fechaBusqueda}
+            onChange={(e) => setFechaBusqueda(e.target.value)}
+          />
+
+          <button
+            className="btn-limpiar-fecha"
+            onClick={() => setFechaBusqueda('')}
+          >
+            Limpiar
+          </button>
+
+          <span className="resultado-fecha">
+            Mostrando {citasFiltradas.length} de {citas.length} citas
+          </span>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -113,11 +144,12 @@ function CitasAdmin() {
                 <th>Estado</th>
               </tr>
             </thead>
+
             <tbody>
               {citasFiltradas.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="no-data">
-                    No hay citas {filtroEstado !== 'todas' ? filtroEstado : ''}
+                    No hay citas con los filtros seleccionados
                   </td>
                 </tr>
               ) : (
@@ -150,4 +182,3 @@ function CitasAdmin() {
 }
 
 export default CitasAdmin
-

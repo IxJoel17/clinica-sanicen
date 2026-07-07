@@ -34,52 +34,53 @@ public class AuthService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     public Map<String, Object> login(String nombreUsuario, String contrasena) {
-        logger.info("Intento de login para usuario: {}", nombreUsuario);
-        
-        Optional<Logeo> logeoOpt = logeoRepository.findByNombreUsuario(nombreUsuario);
-        
-        if (logeoOpt.isEmpty() || !logeoOpt.get().getEstado()) {
-            logger.warn("Intento de login fallido - Usuario no encontrado o inactivo: {}", nombreUsuario);
-            throw new RuntimeException("Usuario no encontrado o inactivo");
-        }
-        
-        Logeo logeo = logeoOpt.get();
-        
-        // Verificar contraseña
-        boolean passwordMatches = passwordEncoder.matches(contrasena, logeo.getContrasena()) || 
-                                  logeo.getContrasena().equals(contrasena);
-        
-        if (!passwordMatches) {
-            logger.warn("Intento de login fallido - Contraseña incorrecta para usuario: {}", nombreUsuario);
-            throw new RuntimeException("Contraseña incorrecta");
-        }
-        
-        // Actualizar último acceso
-        logeo.setUltimoAcceso(LocalDateTime.now());
-        logeoRepository.save(logeo);
-        logger.debug("Último acceso actualizado para usuario: {}", nombreUsuario);
-        
-        // Obtener usuario
-        Usuario usuario = logeo.getUsuario();
-        
-        // Generar token JWT
-        String token = jwtUtil.generateToken(nombreUsuario, usuario.getRol(), usuario.getIdUsuario());
-        logger.info("Token JWT generado exitosamente para usuario: {} con rol: {}", nombreUsuario, usuario.getRol());
-        
-        // Crear respuesta con token
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Login exitoso");
-        response.put("token", token);
-        response.put("idUsuario", usuario.getIdUsuario());
-        response.put("nombre", usuario.getNombre());
-        response.put("apellido", usuario.getApellido());
-        response.put("correo", usuario.getCorreo());
-        response.put("rol", usuario.getRol());
-        response.put("nombreUsuario", logeo.getNombreUsuario());
-        
-        return response;
+    nombreUsuario = nombreUsuario == null ? "" : nombreUsuario.trim().toUpperCase();
+    contrasena = contrasena == null ? "" : contrasena.trim();
+
+    Optional<Logeo> logeoOpt = logeoRepository.findByNombreUsuario(nombreUsuario);
+
+    if (logeoOpt.isEmpty()) {
+        throw new RuntimeException("Usuario no encontrado o inactivo");
     }
+
+    Logeo logeo = logeoOpt.get();
+
+    if (Boolean.FALSE.equals(logeo.getEstado())) {
+        throw new RuntimeException("Usuario no encontrado o inactivo");
+    }
+
+    boolean passwordMatches =
+            passwordEncoder.matches(contrasena, logeo.getContrasena()) ||
+            contrasena.equals(logeo.getContrasena());
+
+    if (!passwordMatches) {
+        throw new RuntimeException("Contraseña incorrecta");
+    }
+
+    logeo.setUltimoAcceso(LocalDateTime.now());
+    logeoRepository.save(logeo);
+
+    Usuario usuario = logeo.getUsuario();
+
+    String token = jwtUtil.generateToken(
+            logeo.getNombreUsuario(),
+            usuario.getRol(),
+            usuario.getIdUsuario()
+    );
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("success", true);
+    response.put("message", "Login exitoso");
+    response.put("token", token);
+    response.put("idUsuario", usuario.getIdUsuario());
+    response.put("nombre", usuario.getNombre());
+    response.put("apellido", usuario.getApellido());
+    response.put("correo", usuario.getCorreo());
+    response.put("rol", usuario.getRol());
+    response.put("nombreUsuario", logeo.getNombreUsuario());
+
+    return response;
+}
     
     @Transactional
     public Usuario registrarUsuario(Usuario usuario, String nombreUsuario, String contrasena) {

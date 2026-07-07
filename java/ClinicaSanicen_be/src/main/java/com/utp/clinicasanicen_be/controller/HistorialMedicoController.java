@@ -47,6 +47,16 @@ public class HistorialMedicoController {
             .collect(Collectors.toList());
         return ResponseEntity.ok(historiales);
     }
+    @GetMapping("/{id}")
+public ResponseEntity<?> getById(@PathVariable Integer id) {
+    Optional<HistorialMedico> historialOpt = historialMedicoRepository.findById(id);
+
+    if (historialOpt.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok(mapHistorialToSimpleMap(historialOpt.get()));
+}
     
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Map<String, Object> request) {

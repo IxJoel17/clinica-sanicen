@@ -24,7 +24,7 @@ public class ReporteBoletaPagoController {
     @Autowired
     private ReporteBoletaPagoService reporteBoletaPagoService;
 
-    @GetMapping("/boletas/{idBoleta}/pdf")
+    @GetMapping("/{idBoleta}/pdf")
     public ResponseEntity<?> generarBoletaPdf(@PathVariable Integer idBoleta) {
         try {
             String sql = """

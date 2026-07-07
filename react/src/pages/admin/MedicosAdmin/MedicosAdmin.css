@@ -274,6 +274,189 @@
   margin-bottom: 20px;
 }
 
+.btn-horario-medico {
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 8px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.btn-horario-medico:hover {
+  background: #0097a7;
+  transform: translateY(-1px);
+}
+
+.horario-modal {
+  max-width: 780px;
+  width: 92%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.btn-volver-horario {
+  background: #a32454;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-volver-horario:hover {
+  background: #8c1c45;
+}
+
+.horario-info-medico {
+  background: #f8fbfc;
+  border-left: 5px solid #00bcd4;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.horario-info-medico p {
+  margin: 4px 0;
+}
+
+.horario-resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.horario-resumen-card {
+  background: #ffffff;
+  border: 1px solid #e4eef2;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.horario-resumen-card strong {
+  display: block;
+  color: #a32454;
+  font-size: 1.4rem;
+}
+
+.horario-resumen-card span {
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.horario-lista {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.horario-card {
+  background: #f8fbfc;
+  border-left: 5px solid #00bcd4;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.horario-card p {
+  margin: 4px 0;
+}
+
+.horario-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.horario-estado {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #e9ecef;
+  color: #333;
+}
+
+.horario-estado.completada {
+  background: #d4edda;
+  color: #155724;
+}
+
+.horario-estado.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.horario-estado.programada {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.horario-estado.cancelada {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.horario-descansos {
+  background: #fff7e6;
+  border-left: 5px solid #f4a100;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.horario-descansos p {
+  margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+  .horario-resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .horario-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+.medicos-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.input-buscar-medico {
+  width: 380px;
+  max-width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #00bcd4;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #ffffff;
+}
+
+.input-buscar-medico:focus {
+  border-color: #a32454;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15);
+}
+
+.medicos-resultados {
+  margin: 10px 0 15px;
+  color: #555;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
