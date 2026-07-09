@@ -1,256 +1,123 @@
-/* Estilos específicos de Detalle Registro */
+.detalle-registro-container {
+  width: 78%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 28px 20px;
+}
 
-.header-detalle {
-  background-color: #a32454;
+.detalle-titulo {
+  background: #a32454;
   color: white;
-  padding: 15px;
-  border-radius: 8px 8px 0 0;
-  font-size: 1.4rem;
-  font-weight: bold;
   text-align: center;
+  padding: 18px;
+  border-radius: 10px 10px 0 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin-bottom: 0;
 }
 
-/* ============================= */
-/* SECCIONES ANTIGUAS */
-/* ============================= */
-
-.seccion {
-  margin-bottom: 25px;
-  padding: 15px;
-  border-left: 5px solid #00bcd4;
-  background-color: #f8f8ff;
-  border-radius: 5px;
-}
-
-.seccion h3 {
-  color: #00bcd4;
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 1px dotted #ccc;
-}
-
-.seccion p {
-  margin: 8px 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.seccion strong {
-  color: #333;
-  font-weight: 600;
-  display: inline-block;
-  min-width: 120px;
-}
-
-/* ============================= */
-/* COMPROBANTE DE CITA */
-/* ============================= */
-
-.comprobante-cita-preview {
-  max-width: 950px;
-  margin: 25px auto;
-  background: #ffffff;
-  border: 1px solid #dcdcdc;
-  border-radius: 14px;
-  padding: 35px 42px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-}
-
-.comprobante-header {
-  text-align: center;
-  margin-bottom: 35px;
-  border-bottom: 3px solid #00bcd4;
-  padding-bottom: 22px;
-}
-
-.comprobante-logo {
-  width: 95px;
-  height: auto;
-  margin-bottom: 10px;
-}
-
-.comprobante-header h1 {
-  color: #e8505b;
-  font-size: 34px;
-  margin: 0 0 8px 0;
-  letter-spacing: 1px;
-}
-
-.comprobante-header h2 {
-  color: #0d2238;
-  font-size: 25px;
-  margin: 0;
-}
-
-.comprobante-seccion {
-  margin-top: 26px;
-  padding: 22px 24px;
-  border-radius: 14px;
-  background: #f8fbfd;
+.detalle-card {
+  background: #f9f9ff;
   border-left: 6px solid #00bcd4;
+  padding: 20px 24px;
+  margin-bottom: 22px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
-.comprobante-seccion h3 {
-  margin: 0 0 18px 0;
-  color: #e8505b;
-  font-size: 20px;
+.detalle-card h2 {
+  color: #00bcd4;
+  font-size: 1.18rem;
+  margin-bottom: 12px;
 }
 
-.comprobante-fila {
+.detalle-linea {
+  border-bottom: 1px dotted #bdbdbd;
+  margin-bottom: 18px;
+}
+
+.detalle-fila {
   display: flex;
-  align-items: center;
-  margin-bottom: 14px;
-  font-size: 17px;
-  line-height: 1.5;
+  gap: 20px;
+  margin-bottom: 15px;
+  font-size: 1.05rem;
 }
 
-.comprobante-fila strong {
-  min-width: 160px;
-  color: #0d2238;
-  font-weight: 700;
+.detalle-fila strong {
+  min-width: 190px;
+  color: #111;
 }
 
-.comprobante-fila span {
-  color: #0d2238;
+.detalle-fila span {
+  color: #222;
 }
 
-.estado-comprobante {
-  display: inline-block;
-  padding: 6px 15px;
-  border-radius: 20px;
-  background: #e8f5e9;
-  color: #2e7d32 !important;
-  font-weight: bold;
-}
-
-.comprobante-footer {
-  margin-top: 38px;
-  text-align: center;
-  font-size: 13px;
-  color: #666;
-  border-top: 1px solid #ddd;
-  padding-top: 18px;
-}
-
-/* ============================= */
-/* BOTONES */
-/* ============================= */
-
-.btn-volver {
-  background-color: #a32454;
-  color: white !important;
-  border: 2px solid #00bcd4;
-  padding: 14px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.btn-volver:hover,
-.btn-volver:visited,
-.btn-volver:link {
-  color: white !important;
-  text-decoration: none;
-}
-
-.btn-volver:hover {
-  background-color: #8c1c45;
-  transform: translateY(-2px);
-}
-
-.acciones-cita-detalle {
-  max-width: 950px;
-  margin: 25px auto 0;
+.detalle-botones-card {
+  padding: 20px;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 18px;
+  gap: 22px;
+  margin-top: 5px;
   flex-wrap: wrap;
 }
 
-.acciones-cita-detalle .btn-volver,
-.btn-imprimir-cita,
-.btn-descargar-cita {
-  width: 225px;
-  height: 58px;
-  background: #a32454;
-  color: white !important;
-  border: 2px solid #00bcd4;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+.btn-volver-detalle,
+.btn-imprimir-detalle,
+.btn-descargar-detalle {
+  border: none;
+  min-width: 230px;
+  padding: 16px 22px;
+  border-radius: 8px;
+  font-weight: 800;
   font-size: 1rem;
-  margin: 0;
-  padding: 0;
+  color: white;
+  cursor: pointer;
   transition: all 0.25s ease;
 }
 
-.btn-imprimir-cita {
+.btn-volver-detalle {
   background: #00bcd4;
-  border-color: #00a6bd;
 }
 
-.btn-descargar-cita {
-  background: #e8505b;
-  border-color: #d9434d;
+.btn-imprimir-detalle,
+.btn-descargar-detalle {
+  background: #a32454;
 }
 
-.btn-imprimir-cita:hover,
-.btn-descargar-cita:hover,
-.acciones-cita-detalle .btn-volver:hover {
-  color: white !important;
+.btn-volver-detalle:hover {
+  background: #00a6bd;
   transform: translateY(-2px);
-  opacity: 0.92;
 }
 
-.acciones-cita-detalle .btn-volver:hover {
+.btn-imprimir-detalle:hover,
+.btn-descargar-detalle:hover {
   background: #8c1c45;
+  transform: translateY(-2px);
 }
-
-/* ============================= */
-/* RESPONSIVE */
-/* ============================= */
 
 @media (max-width: 768px) {
-  .comprobante-cita-preview {
-    padding: 24px 20px;
-    margin: 15px auto;
+  .detalle-registro-container {
+    width: 96%;
+    padding: 20px 10px;
   }
 
-  .comprobante-header h1 {
-    font-size: 28px;
-  }
-
-  .comprobante-header h2 {
-    font-size: 21px;
-  }
-
-  .comprobante-fila {
+  .detalle-fila {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    gap: 5px;
   }
 
-  .comprobante-fila strong {
+  .detalle-fila strong {
     min-width: auto;
   }
 
-  .acciones-cita-detalle {
-    flex-direction: column;
+  .detalle-botones-card {
     gap: 12px;
   }
 
-  .acciones-cita-detalle .btn-volver,
-  .btn-imprimir-cita,
-  .btn-descargar-cita {
+  .btn-volver-detalle,
+  .btn-imprimir-detalle,
+  .btn-descargar-detalle {
     width: 100%;
   }
 }

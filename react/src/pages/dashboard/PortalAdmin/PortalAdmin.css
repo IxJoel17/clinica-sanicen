@@ -212,6 +212,89 @@
   margin-bottom: 20px;
 }
 
+.admin-reportes {
+  margin-top: 35px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.admin-reportes h2 {
+  margin-bottom: 20px;
+  color: #008f99;
+}
+
+.reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.reporte-card-admin {
+  background: #f8fbfc;
+  border-left: 6px solid #00a199;
+  padding: 18px;
+  border-radius: 14px;
+}
+
+.reporte-card-admin h3 {
+  color: #1d2d44;
+  margin-bottom: 8px;
+}
+
+.reporte-card-admin p {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.reporte-btn {
+  width: 100%;
+  background: #00a199;
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.reporte-btn:hover {
+  background: #008c85;
+  transform: translateY(-2px);
+}
+
+.reporte-fechas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.reporte-fechas label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.reporte-fechas input,
+.select-reporte-medico {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #00a199;
+  border-radius: 8px;
+  outline: none;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .reporte-fechas {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .stats-grid,
   .actions-grid {

@@ -583,6 +583,34 @@ SELECT DATE '2026-07-08' + (((g - 1) % 24) * INTERVAL '1 day'),
        END,
        CURRENT_TIMESTAMP - ((g % 10) * INTERVAL '1 day')
 FROM generate_series(1,186) g;
+
+	INSERT INTO cita (fecha, hora, estado, id_paciente, id_medico, motivo, created_at)
+SELECT
+    f.fecha,
+    s.hora,
+    CASE
+        WHEN s.slot = 1 THEN 'programada'
+        WHEN MOD(f.dia_num + m.id_medico, 2) = 0 THEN 'confirmada'
+        ELSE 'pendiente'
+    END AS estado,
+    ((m.id_medico + f.dia_num + s.slot - 1) % 130) + 1 AS id_paciente,
+    m.id_medico,
+    CASE
+        WHEN s.slot = 1 THEN 'Consulta médica programada'
+        ELSE 'Control médico de seguimiento'
+    END AS motivo,
+    CURRENT_TIMESTAMP
+	FROM medico m
+	CROSS JOIN (
+	    SELECT fecha::date AS fecha,
+	           ROW_NUMBER() OVER (ORDER BY fecha) AS dia_num
+	    FROM generate_series(DATE '2026-07-08', DATE '2026-07-31', INTERVAL '1 day') AS fecha
+	) f
+	CROSS JOIN (
+	    SELECT 1 AS slot, TIME '14:00' AS hora
+	    UNION ALL
+	    SELECT 2 AS slot, TIME '16:00' AS hora
+	) s;
 	
 	INSERT INTO historial_medico (id_paciente, id_medico, diagnostico, tratamiento, observaciones, fecha_registro)
 	SELECT c.id_paciente, c.id_medico,
@@ -671,8 +699,6 @@ ORDER BY e.id_especialidad;
 	-------------------------
 	MÉDICOS (ROL J)
 	-------------------------
-	MÉDICOS (ROL J)
--------------------------
 	Usuario: J124578 | Clave: 123456 | Roberto Vargas
 	Usuario: J123456 | Clave: 123456 | Laura Ramirez
 	Usuario: J112233 | Clave: 123456 | Pedro Mendoza

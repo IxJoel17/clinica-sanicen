@@ -258,6 +258,51 @@
   margin-bottom: 20px;
 }
 
+.busqueda-citas-medico {
+  display: flex;
+  gap: 12px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.busqueda-citas-medico input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 2px solid #00a199;
+  border-radius: 10px;
+  outline: none;
+  font-size: 1rem;
+}
+
+.busqueda-citas-medico button {
+  background: #ea6248;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resultado-busqueda-medico {
+  color: #555;
+  font-weight: 700;
+  margin: 12px 0 18px;
+}
+
+@media (max-width: 768px) {
+  .busqueda-citas-medico {
+    flex-direction: column;
+  }
+
+  .busqueda-citas-medico button {
+    padding: 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .citas-list-medico {
     grid-template-columns: 1fr;

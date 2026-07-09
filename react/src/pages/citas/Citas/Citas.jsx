@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+
 import LayoutWithSidebar from '../../../components/LayoutWithSidebar'
 import { useAuth } from '../../../context/AuthContext'
 import qrYape from '../../../assets/img/pagos/qr-yape.jpeg'
 import qrPlin from '../../../assets/img/pagos/qr-plin.jpeg'
-import { citasAPI, medicosAPI, especialidadesAPI, pacientesAPI } from '../../../services/api'
+import { historialAPI, citasAPI, medicosAPI, especialidadesAPI, pacientesAPI } from '../../../services/api'
 import '../../../styles/common.css'
 import './Citas.css'
 
@@ -645,7 +646,7 @@ function Citas() {
 
                       <div className="cita-card-actions">
                         <Link
-                        to={`/detalle-registro?id=${registro.idHistorial}`}
+                        to={`/detalle-registro?citaId=${cita.idCita || cita.id_cita || cita.id}`}
                         className="btn-cita-info"
                       >
                         <span>📋</span>

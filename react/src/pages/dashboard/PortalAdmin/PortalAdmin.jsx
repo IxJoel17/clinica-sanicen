@@ -15,6 +15,11 @@ function PortalAdmin() {
     totalCitas: 0,
     citasRecientes: [],
   })
+
+  const [medicos, setMedicos] = useState([])
+  const [medicoReporte, setMedicoReporte] = useState('')
+  const [fechaDesde, setFechaDesde] = useState('2026-07-08')
+  const [fechaHasta, setFechaHasta] = useState('2026-07-31')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -24,12 +29,13 @@ function PortalAdmin() {
 
   const cargarEstadisticas = async () => {
     setLoading(true)
+
     try {
       const [medicosRes, pacientesRes, usuariosRes, citasRes] = await Promise.all([
-        medicosAPI.getAll().catch(() => ({ data: [] })),
-        pacientesAPI.getAll().catch(() => ({ data: [] })),
-        usuariosAPI.getAll().catch(() => ({ data: [] })),
-        citasAPI.getAll().catch(() => ({ data: [] })),
+        medicosAPI.getAll().catch(() => []),
+        pacientesAPI.getAll().catch(() => []),
+        usuariosAPI.getAll().catch(() => []),
+        citasAPI.getAll().catch(() => []),
       ])
 
       const medicosData = medicosRes?.data || medicosRes || []
@@ -37,17 +43,20 @@ function PortalAdmin() {
       const usuariosData = usuariosRes?.data || usuariosRes || []
       const citasData = citasRes?.data || citasRes || []
 
-      // Filtrar solo citas programadas y ordenar por fecha (más próximas primero)
-      const fechaActual = new Date()
+      setMedicos(medicosData)
+
+      if (medicosData.length > 0) {
+        setMedicoReporte(medicosData[0].idMedico)
+      }
+
       const citasProgramadas = citasData
         .filter((cita) => cita.estado === 'programada' || cita.estado === 'pendiente')
         .sort((a, b) => {
           const fechaA = new Date(`${a.fecha}T${a.hora}`)
           const fechaB = new Date(`${b.fecha}T${b.hora}`)
-          // Ordenar de más próxima a menos próxima (ascendente)
           return fechaA - fechaB
         })
-        .slice(0, 10) // Solo las 10 más próximas
+        .slice(0, 10)
 
       setStats({
         totalMedicos: medicosData.length || 0,
@@ -66,7 +75,11 @@ function PortalAdmin() {
 
   const formatFecha = (fecha) => {
     if (!fecha) return ''
-    return new Date(fecha).toLocaleDateString('es-ES', {
+
+    const [year, month, day] = String(fecha).split('-')
+    const date = new Date(Number(year), Number(month) - 1, Number(day))
+
+    return date.toLocaleDateString('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -75,7 +88,35 @@ function PortalAdmin() {
 
   const formatHora = (hora) => {
     if (!hora) return ''
-    return hora.substring(0, 5)
+    return String(hora).substring(0, 5)
+  }
+
+  const abrirReporteEstadistico = () => {
+    window.open('http://localhost:8080/api/reportes/admin/estadisticas/pdf', '_blank')
+  }
+
+  const abrirReporteCitas = () => {
+    if (!fechaDesde || !fechaHasta) {
+      alert('Seleccione fecha desde y hasta')
+      return
+    }
+
+    window.open(
+      `http://localhost:8080/api/reportes/citas-rango/pdf?desde=${fechaDesde}&hasta=${fechaHasta}`,
+      '_blank'
+    )
+  }
+
+  const abrirReportePacientesMedico = () => {
+    if (!medicoReporte) {
+      alert('Seleccione un médico')
+      return
+    }
+
+    window.open(
+      `http://localhost:8080/api/reportes/pacientes-medico/${medicoReporte}/pdf`,
+      '_blank'
+    )
   }
 
   if (loading) {
@@ -93,6 +134,7 @@ function PortalAdmin() {
       <div className="portal-admin-container container">
         <div className="admin-header">
           <h1>Panel de Administración</h1>
+
           {user && (
             <p className="admin-welcome">
               Bienvenido, <strong>{user.nombre} {user.apellido}</strong>
@@ -100,13 +142,8 @@ function PortalAdmin() {
           )}
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
-        {/* Estadísticas Generales */}
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-icon">👨‍⚕️</div>
@@ -141,9 +178,9 @@ function PortalAdmin() {
           </div>
         </div>
 
-        {/* Acciones Rápidas */}
         <div className="admin-actions">
           <h2>Gestión del Sistema</h2>
+
           <div className="actions-grid">
             <Link to="/admin/medicos" className="action-card-admin">
               <div className="action-icon-admin">👨‍⚕️</div>
@@ -187,10 +224,74 @@ function PortalAdmin() {
           </div>
         </div>
 
-        {/* Citas Próximas */}
+        <div className="admin-reportes">
+          <h2>📑 Reportes del Sistema</h2>
+
+          <div className="reportes-grid">
+            <div className="reporte-card-admin">
+              <h3>📊 Reporte Estadístico</h3>
+              <p>Resumen general del sistema, citas, boletas e ingresos.</p>
+              <button className="reporte-btn" onClick={abrirReporteEstadistico}>
+                Generar PDF
+              </button>
+            </div>
+
+            <div className="reporte-card-admin">
+              <h3>📅 Reporte de Citas</h3>
+              <p>Reporte de citas por rango de fechas.</p>
+
+              <div className="reporte-fechas">
+                <div>
+                  <label>Desde</label>
+                  <input
+                    type="date"
+                    value={fechaDesde}
+                    onChange={(e) => setFechaDesde(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label>Hasta</label>
+                  <input
+                    type="date"
+                    value={fechaHasta}
+                    onChange={(e) => setFechaHasta(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <button className="reporte-btn" onClick={abrirReporteCitas}>
+                Generar PDF
+              </button>
+            </div>
+
+            <div className="reporte-card-admin">
+              <h3>👨‍⚕️ Pacientes por Médico</h3>
+              <p>Lista de pacientes atendidos por un médico seleccionado.</p>
+
+              <select
+                className="select-reporte-medico"
+                value={medicoReporte}
+                onChange={(e) => setMedicoReporte(e.target.value)}
+              >
+                {medicos.map((medico) => (
+                  <option key={medico.idMedico} value={medico.idMedico}>
+                    {medico.nombre} {medico.apellido}
+                  </option>
+                ))}
+              </select>
+
+              <button className="reporte-btn" onClick={abrirReportePacientesMedico}>
+                Generar PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
         {stats.citasRecientes.length > 0 && (
           <div className="citas-recientes-section">
             <h2>Citas Programadas Próximas</h2>
+
             <div className="citas-recientes-table">
               <table>
                 <thead>
@@ -202,6 +303,7 @@ function PortalAdmin() {
                     <th>Estado</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {stats.citasRecientes.map((cita) => (
                     <tr key={cita.idCita}>
@@ -231,4 +333,3 @@ function PortalAdmin() {
 }
 
 export default PortalAdmin
-
