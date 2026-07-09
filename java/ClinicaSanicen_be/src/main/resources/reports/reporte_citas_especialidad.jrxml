@@ -25,7 +25,7 @@
         <band height="205">
 
             <rectangle>
-                <reportElement x="0" y="0" width="515" height="10" backcolor="##EA6248" mode="Opaque"/>
+                <reportElement x="0" y="0" width="515" height="10" backcolor="#EA6248" mode="Opaque"/>
                 <graphicElement>
                     <pen lineWidth="0"/>
                 </graphicElement>
